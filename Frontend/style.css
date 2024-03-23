@@ -1,0 +1,48 @@
+body {
+    background-color: azure;
+    padding: 0px;
+    margin: 0px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.title {
+    font-size: 30px;
+    color:white;
+    text-align: center;
+}
+
+.button-navbar {
+    background:none;
+    border-radius: 15px;
+    font-size: 20px;
+    text-align: left;
+    border: 1px;
+    color: white;
+    margin-top: 10px;
+    padding: 5px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.button-navbar:hover {
+    cursor: pointer;
+    border: 1px solid white;
+}
+
+.vertical-navbar {
+    background-image: linear-gradient(rgb(144, 123, 238),rgb(28, 120, 162), rgb(74, 33, 255));
+    display: flex; 
+    flex-direction: column;
+    width: 180px;
+    margin: 0px;
+    height: calc(100vh - 20px);
+    padding: 10px;
+}
