@@ -1,27 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
+
 
     <title>Expenses Tracker</title>
 </head>
+
 <body>
 
-    <div class="vertical-navbar">
-    <h1 class="title"> Expenses Tracker</h1>
+    <div class="page-organization">
 
-    <button class="button-navbar"><i class="fa fa-home" style="margin-right: 5px; margin-left: 1px;"></i>Home</button>
-    <button class="button-navbar"><i class="fa fa-usd" style="margin-right: 10px; margin-left: 4px;"></i>Exchange rate</button>
-    <button class="button-navbar"><i class="fa fa-user-o" style="margin-right: 9px; margin-left: 2px;"></i>Profile</button>
+        <div class="vertical-navbar">
+            <h1 class="title"> Expenses Tracker</h1>
+
+            <button class="button-navbar"><i class="fa fa-home"
+                    style="margin-right: 5px; margin-left: 1px;"></i>Home</button>
+            <button class="button-navbar"><i class="fa fa-usd"
+                    style="margin-right: 10px; margin-left: 4px;"></i>Exchange rate</button>
+            <button class="button-navbar"><i class="fa fa-user-o"
+                    style="margin-right: 9px; margin-left: 2px;"></i>Profile</button>
+        </div>
+
+        <div class="group-middle-sections">
+
+            <div class="horizontal-navbar">
+            
+                <button class="button-horizontal-navbar" style="border-bottom: 1px solid rgb(74, 33, 255);">Day</button>
+                <button class="button-horizontal-navbar">Week</button>
+                <button class="button-horizontal-navbar">Month</button>
+                <button class="button-horizontal-navbar">Year</button>
+            
+            </div>
+            
+            <span class="budget-span" style="margin-left: 5px; margin-bottom: 10px;">Hello, Luca</span>
+                <div class="add-new-expense-div">
+                    <div>
+                        <span class="budget-span">Budget: 300 </span>
+                        <span class="currency">RON</span>
+                    </div>
+                    <button class="add-new-expense-button">+</button>
+                </div>
+
+            <div class="categories-percentage">
+
+               <div class="category-percentage-title">Statistics - <span>Today
+               </span></div>
+
+                <span class="category-name">Food: <span>50 RON</span></span> 
+                <div class="progress-box">
+                    <div class="progress">50%</div>
+                </div>
+
+                <span class="category-name">House: <span>50 RON</span></span>
+                <div class="progress-box">
+                    <div class="progress">50%</div>
+                </div>
+
+                <span class="category-name">Car: <span>50 RON</span></span>
+                <div class="progress-box">
+                    <div class="progress">50%</div>
+                </div>
+
+                <span class="category-name">Gym: <span>50 RON</span></span>
+                <div class="progress-box">
+                    <div class="progress">50%</div>
+                </div>
+
+                <span class="category-name">Entertainment: <span>50 RON</span></span>
+                <div class="progress-box">
+                    <div class="progress">50%</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="div-history">
+            <span class="history-span-title">History</span>
+
+            <div class="div-history-day">
+                <span class="history-day-date">Today</span>
+                <span class="history-day-expense">Car:50 RON</span>
+            </div>
+            
+        </div>
 
     </div>
-
     <footer>
-        <p>&copy; 2024 Expenses Tracker. All rights reserved.</p>
+        <p>&copy; 2024 Expenses Tracker</p>
     </footer>
 </body>
+
 </html>
