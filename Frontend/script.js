@@ -3,9 +3,10 @@
 /* Default in memory data */
 
 /* ------------------------------------------------------------------------------------ */
-function User(name, expenses) {
+function User(name, expenses, budget) {
     this.name = name;
     this.expenses = expenses;
+    this.budget = budget;
 }
 
 function Expense(category, sum, data) {
@@ -17,7 +18,7 @@ var expenses1 = [
     new Expense("Food", 50, new Date("2024-03-24")),
     new Expense("Gym", 80, new Date("2024-03-24")),
     new Expense("Car", 120, new Date("2024-03-24")),
-    new Expense("Food", 60, new Date("2024-03-22")),
+    new Expense("Food", 60, new Date("2024-03-25")),
     new Expense("Gym", 90, new Date("2024-03-21")),
     new Expense("Car", 110, new Date("2024-03-20")),
     new Expense("Food", 55, new Date("2024-03-23")),
@@ -31,19 +32,205 @@ var expenses1 = [
     new Expense("Entertainment", 180, new Date("2024-02-29"))
 ];
 
-var user1 = new User("Luca", expenses1);
+var user1 = new User("Luca", expenses1, 300);
 var currency = "RON";
 
 var spanUsername = document.getElementById("span-username");
-spanUsername.innerHTML = "Hello, "+ user1.name;
+spanUsername.innerHTML = "Hello, " + user1.name;
+
+var spanBudget = document.getElementById('span-budget-value');
+spanBudget.innerHTML = user1.budget;
+var numberOfCategories = 5;
+/* Currency */
+var currencyHTML = document.querySelectorAll('.currency');
+
+currencyHTML.forEach(function (currency) {
+    currency.innerHTML = this.currency;
+})
+
+/* Statistics and categories */
+var statisticsProgress = document.querySelectorAll('.progress');
+var statisticsAmount = document.querySelectorAll('.statistics-amount');
+var statisticsCategory = document.querySelectorAll('.category-name');
+
+
+var divAddNewExpense = document.getElementById('div-add-new-expense');
+var divStatistics = document.getElementById('div-statistics');
+var divGroupMiddleSections = document.getElementById('div-group-middle-sections');
+
+var errorMessageSet = false;
+
+/* ------------------------------------------------------------------------------------ */
+
+/* Change currency functionality */
+
+/* ------------------------------------------------------------------------------------ */
+
+
+
+
+
+
 
 
 
 /* ------------------------------------------------------------------------------------ */
 
-/* Vertical navigation bar buttons*/
+/* Add new category functionality */
 
 /* ------------------------------------------------------------------------------------ */
+var categoryList = document.getElementById('form-input-category');
+
+/* Button from vertical navigation bar */
+var buttonAddCategory = document.getElementById('button-add-new-category');
+var buttonAddCategoryClicked = false;
+
+var divAddNewCategory = document.createElement('div');
+var spanAddNewCategory = document.createElement('span');
+var formAddNewCategory = document.createElement('form');
+var inputNewCategory = document.createElement('input');
+var buttonAddNewCategory = document.createElement('button');
+
+
+/* Create the div where user have to enter a new category */
+buttonAddCategory.addEventListener("click", function () {
+    if (!buttonAddCategoryClicked) {
+        buttonAddCategoryClicked = true;
+        divAddNewExpense.style.display = 'none';
+
+        createDivAddNewCategory();
+    }
+});
+
+function createDivAddNewCategory() {
+    divAddNewCategory.classList.add('div-add-new-category');
+    divAddNewCategory.style.display = "block";
+
+    spanAddNewCategory.innerText = "Add new category";
+    spanAddNewCategory.classList.add('span-add-new-category');
+    spanAddNewCategory.style.margin = "10px";
+    divAddNewCategory.appendChild(spanAddNewCategory);
+
+    inputNewCategory.classList.add('input-category');
+    inputNewCategory.placeholder = "Food";
+    inputNewCategory.required = true;
+    inputNewCategory.type = "text";
+    inputNewCategory.maxLength = 20;
+    inputNewCategory.name = "category";
+    formAddNewCategory.appendChild(inputNewCategory);
+
+    buttonAddNewCategory.classList.add('button-add-new-category');
+    buttonAddNewCategory.style.margin = "10px";
+    buttonAddCategory.type = "submit";
+    buttonAddNewCategory.innerText = "+";
+    formAddNewCategory.appendChild(buttonAddNewCategory);
+
+    formAddNewCategory.style = "display: flex; flex-direction: column;";
+    divAddNewCategory.appendChild(formAddNewCategory);
+
+    divGroupMiddleSections.insertBefore(divAddNewCategory, divStatistics);
+}
+
+
+/* Return to home page and create a new category */
+
+formAddNewCategory.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    // ok means this category doesn't exist
+    var ok = true;
+
+    for (var i = 0; i < numberOfCategories; i++) {
+        if (statisticsCategory[i].innerText == inputNewCategory.value) {
+            createCategoryExistsErrorMessage();
+            ok = false;
+            i = numberOfCategories;
+        }
+    }
+
+    if (ok) {
+        divAddNewCategory.style.display = "none";
+        divAddNewExpense.style.display = "block";
+
+        numberOfCategories++;
+
+        createNewCategory(inputNewCategory.value);
+
+        buttonAddCategoryClicked = false;
+
+        formAddNewCategory.reset();
+    }
+});
+
+
+/* Add the new category in statistics and category list divs */
+function createNewCategory(value) {
+
+    // Statistics
+    var divNewCategoryInStatistics = document.createElement('div');
+    divNewCategoryInStatistics.classList.add('div-individual-statistics');
+
+    var spanCategoryName = document.createElement('span');
+    spanCategoryName.classList.add('category-name');
+    spanCategoryName.innerText = value;
+    divNewCategoryInStatistics.appendChild(spanCategoryName);
+    divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
+
+    var spanCategoryAmount = document.createElement('span');
+    spanCategoryAmount.classList.add('statistics-amount');
+    spanCategoryAmount.innerText = "0";
+    divNewCategoryInStatistics.appendChild(spanCategoryAmount);
+    divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
+
+    var spanCurrency = document.createElement('span');
+    spanCurrency.classList.add('currency');
+    spanCurrency.innerText = currency;
+    divNewCategoryInStatistics.appendChild(spanCurrency);
+    divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
+
+    var divProgressBox = document.createElement('div');
+    divProgressBox.classList.add('progress-box');
+    divNewCategoryInStatistics.appendChild(divProgressBox);
+
+    var divProgress = document.createElement('div');
+    divProgress.classList.add('progress');
+    divProgress.style.width = "0px";
+    divProgress.innerHTML = "0%";
+    divProgressBox.appendChild(divProgress);
+
+    divStatistics.insertBefore(divNewCategoryInStatistics,
+        document.querySelector('.div-statistics-total'));
+
+    statisticsCategory = document.querySelectorAll('.category-name');
+    statisticsAmount = document.querySelectorAll('.statistics-amount');
+    statisticsProgress = document.querySelectorAll('.progress');
+
+    /* Category List (from add new expense) */
+    var option = document.createElement('option');
+    option.classList.add('form-input-category-option');
+    option.innerText = value;
+
+    categoryList.appendChild(option);
+}
+
+
+/* Wrong input function */
+function createCategoryExistsErrorMessage() {
+    if (!errorMessageSet) {
+        errorMessageSet = true;
+
+        var spanCategoryExists = document.createElement('span');
+        spanCategoryExists.classList.add('span-category-exists');
+        spanCategoryExists.innerText = "This category already exists!";
+        formAddNewCategory.insertBefore(spanCategoryExists, formAddNewCategory.firstChild);
+
+        setTimeout(function () {
+            spanCategoryExists.remove();
+            errorMessageSet = false;
+        }, 5000);
+    }
+}
+
 
 
 
@@ -53,6 +240,50 @@ spanUsername.innerHTML = "Hello, "+ user1.name;
 /* Add new expense functionality */
 
 /* ------------------------------------------------------------------------------------ */
+
+var buttonAddNewExpense = document.getElementById('button-add-new-expense');
+var formInputAmount = document.getElementById('form-input-amount');
+var formInputCategory = document.getElementById('form-input-category');
+var formExpense = document.getElementById('form-expense');
+
+// Span Insufficient Funds 
+var spanInsufficientFunds = document.createElement('span');
+
+document.getElementById("form-expense").addEventListener("submit", function (event) {
+    event.preventDefault();
+    var amount = document.getElementById("form-input-amount").value;
+    var category = document.getElementById("form-input-category").value;
+    var budgetValue = parseInt(spanBudget.innerText) - parseInt(amount);
+
+    if (budgetValue < 0) {
+        if (!errorMessageSet) {
+            errorMessageSet = true;
+        
+            spanInsufficientFunds.classList.add('span-insufficient-funds');
+            spanInsufficientFunds.innerText = "Insufficent Funds!";
+            formExpense.insertBefore(spanInsufficientFunds, formExpense.firstChild);
+            setTimeout(function () {
+                spanInsufficientFunds.remove();
+                errorMessageSet = false;
+            }, 5000);
+        }
+    }
+    else {
+        setNewExpenseToList(amount, category);
+        if (spanInsufficientFunds != undefined) {
+            spanInsufficientFunds.remove();
+        }
+        spanBudget.innerHTML = budgetValue;
+        dayClicked = false;
+        buttonDay.click();
+        document.getElementById("form-expense").reset();
+    }
+});
+
+function setNewExpenseToList(amount, category) {
+    var newExpense = new Expense(category, parseInt(amount), new Date());
+    expenses1.push(newExpense);
+}
 
 
 
@@ -72,7 +303,6 @@ var yearClicked = false;
 document.addEventListener('DOMContentLoaded', function () {
     buttonDay.classList.add('button-active');
     buttonDay.click();
-    
 });
 
 /* TOP BUTTONS */
@@ -81,39 +311,11 @@ var buttonWeek = document.getElementById("button-week");
 var buttonMonth = document.getElementById("button-month");
 var buttonYear = document.getElementById("button-year");
 
-/* Objects to be modified on button click */
-var spanPeriod = document.getElementById("span-period");
-
-/* Category names */
-var firstCategory = document.getElementById("first-category");
-var secondCategory = document.getElementById("second-category");
-var thirdCategory = document.getElementById("third-category");
-var fourthCategory = document.getElementById("fourth-category");
-var fifthCategory = document.getElementById("fifth-category");
-
-/* Category amount */
-var firstAmount = document.getElementById("first-amount");
-var secondAmount = document.getElementById("second-amount");
-var thirdAmount = document.getElementById("third-amount");
-var fourthAmount = document.getElementById("fourth-amount");
-var fifthAmount = document.getElementById("fifth-amount");
-
-/* Category progress */
-var firstProgress = document.getElementById("first-progress");
-var secondProgress = document.getElementById("second-progress");
-var thirdProgress = document.getElementById("third-progress");
-var fourthProgress = document.getElementById("fourth-progress");
-var fifthProgress = document.getElementById("fifth-progress");
-
-/* Currency */
-var currencyHTML = document.querySelectorAll('.currency');
-
-currencyHTML.forEach(function(currency){
-    currency.innerHTML = this.currency;
-})
+var spanPeriodStatistics = document.getElementById("span-period");
 
 /* Total money spent */
 var totalMoneySpent = document.getElementById("span-total");
+
 
 /* Button onclick functions */
 buttonDay.addEventListener("click", function () {
@@ -126,7 +328,7 @@ buttonDay.addEventListener("click", function () {
         weekClicked = false;
         monthClicked = false;
         yearClicked = false;
-        spanPeriod.innerHTML = "Today";
+        spanPeriodStatistics.innerHTML = "Today";
         var todayExpenses = getTodayExpenses(expenses1);
         populateHistory(todayExpenses, 0);
         calculateStatistics(todayExpenses);
@@ -143,7 +345,7 @@ buttonWeek.addEventListener("click", function () {
         dayClicked = false;
         monthClicked = false;
         yearClicked = false;
-        spanPeriod.innerHTML = "This Week";
+        spanPeriodStatistics.innerHTML = "This Week";
         var weekExpenses = getWeekExpenses(expenses1);
         populateHistory(weekExpenses, 1);
         calculateStatistics(weekExpenses);
@@ -160,7 +362,7 @@ buttonMonth.addEventListener("click", function () {
         dayClicked = false;
         weekClicked = false;
         yearClicked = false;
-        spanPeriod.innerHTML = "This Month";
+        spanPeriodStatistics.innerHTML = "This Month";
         var monthExpenses = getMonthExpenses(expenses1);
         populateHistory(monthExpenses, 2);
         calculateStatistics(monthExpenses);
@@ -177,7 +379,7 @@ buttonYear.addEventListener("click", function () {
         dayClicked = false;
         weekClicked = false;
         monthClicked = false;
-        spanPeriod.innerHTML = "This Year";
+        spanPeriodStatistics.innerHTML = "This Year";
         var yearExpenses = getYearExpenses(expenses1);
         populateHistory(yearExpenses, 3);
         calculateStatistics(yearExpenses);
@@ -189,45 +391,34 @@ buttonYear.addEventListener("click", function () {
 
 
 function populateHistory(expenses, period) {
-    divHistoryList = document.querySelector('.div-history-list');
-    divHistoryList.innerHTML ='';
+    var divHistoryList = document.querySelector('.div-history-list');
+    divHistoryList.innerHTML = '';
 
     var periodText = document.querySelector('.span-history-date');
-    if (period === 0) {
-        periodText.innerHTML = "Today";
-    }
-    if (period === 1) {
-        periodText.innerHTML = "This week";
-    }
-    if (period === 2) {
-        periodText.innerHTML = "This month";
-    }
-    if (period === 3) {
-        periodText.innerHTML = "This year";
-    }
 
-    expenses.forEach(function (expense) {
+    var divHistoryItem = document.createElement('div');
+    divHistoryItem.classList.add('div-history-list');
 
-        var divHistoryItem = document.createElement('div');
-        divHistoryItem.classList.add('div-history-list');
-
-        if (period === 0) {
+    switch (period) {
+        case 0:
             var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
-            dateSpan.textContent = expense.data.toLocaleDateString();
+            dateSpan.textContent = new Date().toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
-            period = 4;
-        }
-        if (period === 1) {
+
+            periodText.innerHTML = "Today";
+            break;
+        case 1:
             var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
             var today = new Date();
             var lastWeek = new Date(today.setDate(today.getDate() - 6));
             dateSpan.textContent = lastWeek.toLocaleDateString() + " - " + new Date().toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
-            period = 4;
-        }
-        if (period === 2) {
+
+            periodText.innerHTML = "This week";
+            break;
+        case 2:
             var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
             var today = new Date();
@@ -235,9 +426,10 @@ function populateHistory(expenses, period) {
             var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
             dateSpan.textContent = firstDayOfMonth.toLocaleDateString() + " - " + lastDayOfMonth.toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
-            period = 4;
-        }
-        if (period === 3) {
+
+            periodText.innerHTML = "This month";
+            break;
+        case 3:
             var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
             var today = new Date();
@@ -245,15 +437,26 @@ function populateHistory(expenses, period) {
             var lastDayOfYear = new Date(today.getFullYear(), 11, 31);
             dateSpan.textContent = firstDayOfYear.toLocaleDateString() + " - " + lastDayOfYear.toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
-            period = 4;
-        }
+
+            periodText.innerHTML = "This year";
+            break;
+        default:
+            console.log("Something went wrong!");
+    }
+
+    divHistoryList.appendChild(divHistoryItem);
+
+    expenses.forEach(function (expense) {
+
+        var divHistoryItem = document.createElement('div');
+        divHistoryItem.classList.add('div-history-list');
 
         var expenseSpan = document.createElement('span');
         expenseSpan.textContent = expense.category + ': ' + expense.sum + ' ';
 
         var currencySpan = document.createElement('span');
         currencySpan.classList.add('currency');
-        currencySpan.textContent = this.currency;
+        currencySpan.textContent = currency;
 
         expenseSpan.appendChild(currencySpan);
         divHistoryItem.appendChild(expenseSpan);
@@ -263,97 +466,45 @@ function populateHistory(expenses, period) {
 }
 
 function calculateStatistics(expenses) {
-    var firstCategorySum = 0;
-    var secondCategorySum = 0;
-    var thirdCategorySum = 0;
-    var fourthCategorySum = 0;
-    var fifthCategorySum = 0;
+
+    var categorySumVector = [];
+    for (var i = 0; i < numberOfCategories; i++) {
+        categorySumVector.push(0);
+    }
     var total = 0;
 
     expenses.forEach(function (expense) {
-        if (expense.category === firstCategory.innerText) {
-            firstCategorySum += expense.sum;
-            total += expense.sum;
+        for (var i = 0; i < numberOfCategories; i++) {
+            if (expense.category === statisticsCategory[i].innerHTML) {
+                categorySumVector[i] += expense.sum;
+            }
         }
-        if (expense.category === secondCategory.innerText) {
-            secondCategorySum += expense.sum;
-            total += expense.sum;
-        }
-        if (expense.category === thirdCategory.innerText) {
-            thirdCategorySum += expense.sum;
-            total += expense.sum;
-        }
-        if (expense.category === fourthCategory.innerText) {
-            fourthCategorySum += expense.sum;
-            total += expense.sum;
-        }
-        if (expense.category === fifthCategory.innerText) {
-            fifthCategorySum += expense.sum;
-            total += expense.sum;
-        }
+        total += expense.sum;
     });
 
-    if (total === 0) {
-        firstProgress.innerHTML = "0%";
-        firstProgress.style.width = "0px";
-        secondProgress.innerHTML = "0%";
-        secondProgress.style.width = "0px";
-        thirdProgress.innerHTML = "0%";
-        thirdProgress.style.width = "0px";
-        fourthProgress.innerHTML = "0%";
-        fourthProgress.style.width = "0px";
-        fifthProgress.innerHTML = "0%";
-        fifthProgress.style.width = "0px";
-
-        firstAmount.innerHTML = firstCategorySum;
-        secondAmount.innerHTML = secondCategorySum;
-        thirdAmount.innerHTML = thirdCategorySum;
-        fourthAmount.innerHTML = fourthCategorySum;
-        fifthAmount.innerHTML = fifthCategorySum;
-        
-        totalMoneySpent.innerHTML = total;
-        return 0;
+    // Set total money spent and category spent
+    totalMoneySpent.innerHTML = total;
+    for (var i = 0; i < numberOfCategories; i++) {
+        statisticsAmount[i].innerHTML = categorySumVector[i];
     }
 
+    if (total === 0) {
+        for (var i = 0; i < numberOfCategories; i++) {
+            console.log("TOTAL");
+            this.statisticsProgress[i].innerHTML = "0%";
+            this.statisticsProgress[i].style.width = "0px";
+        }
+    }
+    else {
 
-    totalMoneySpent.innerHTML = total;
-    firstAmount.innerHTML = firstCategorySum;
-    secondAmount.innerHTML = secondCategorySum;
-    thirdAmount.innerHTML = thirdCategorySum;
-    fourthAmount.innerHTML = fourthCategorySum;
-    fifthAmount.innerHTML = fifthCategorySum;
+        var percentage = 0;
 
-    var percentage = 0;
-
-    percentage = firstCategorySum / total * 100;
-    firstProgress.innerHTML = Math.round(percentage) + "%";
-    firstProgress.style.width = percentage / 100 * 500 + "px";
-
-    percentage = 0;
-
-    percentage = secondCategorySum / total * 100;
-    secondProgress.innerHTML = Math.round(percentage) + "%";
-    secondProgress.style.width = percentage / 100 * 500 + "px";
-
-    percentage = 0;
-
-    percentage = thirdCategorySum / total * 100;
-    thirdProgress.innerHTML = Math.round(percentage) + "%";
-    thirdProgress.style.width = percentage / 100 * 500 + "px";
-
-    percentage = 0;
-
-    percentage = fourthCategorySum / total * 100;
-    fourthProgress.innerHTML = Math.round(percentage) + "%";
-    fourthProgress.style.width = percentage / 100 * 500 + "px";
-
-    percentage = 0;
-
-    percentage = fifthCategorySum / total * 100;
-    fifthProgress.innerHTML = Math.round(percentage) + "%";
-    fifthProgress.style.width = percentage / 100 * 500 + "px";
-
-    return 0;
+        for (var i = 0; i < numberOfCategories; i++) {
+            percentage = categorySumVector[i] / total * 100;
+            statisticsProgress[i].innerHTML = Math.round(percentage) + "%";
+            statisticsProgress[i].style.width = percentage / 100 * 500 + "px";
+        }
+    }
 }
 
 
@@ -375,12 +526,13 @@ function getTodayExpenses(expenses) {
 function getWeekExpenses(expenses) {
 
     var today = new Date();
-    var lastDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    var lastDayOfWeek = new Date(today.setDate(today.getDate()));
     var firstDayOfWeek = new Date(today.setDate(lastDayOfWeek.getDate() - 6));
 
     var weekExpenses = expenses.filter(function (expense) {
         return expense.data >= firstDayOfWeek && expense.data <= lastDayOfWeek;
     });
+
 
     return weekExpenses;
 }

@@ -20,81 +20,110 @@
 
             <button class="vertical-navbar-button"><i class="fa fa-home"
                     style="margin-right: 5px; margin-left: 1px;"></i>Home</button>
-            <button class="vertical-navbar-button"><i class="fa fa-usd"
-                    style="margin-right: 10px; margin-left: 4px;"></i>Exchange rate</button>
             <button class="vertical-navbar-button"><i class="fa fa-user-o"
                     style="margin-right: 9px; margin-left: 2px;"></i>Profile</button>
+            <button class="vertical-navbar-button"><i class="fa fa-money"
+                    style="margin-right: 5px; margin-left: 0px;"></i>Exchange rate</button>
+            <button class="vertical-navbar-button"><i class="fa fa-eur"
+                    style="margin-right: 10px; margin-left: 5px;"></i>Change currency</button>
+            <button id="button-add-new-category" class="vertical-navbar-button"><i class="fa fa-plus-circle"
+                    style="margin-right: 9px; margin-left: 2px;"></i>Add Category</button>
+            <button class="vertical-navbar-button"><i class="fa fa-usd"
+                    style="margin-right: 13px; margin-left: 5px;"></i>Add Budget</button>
+
         </div>
 
-        <div class="group-middle-sections">
+        <div id="div-group-middle-sections" class="group-middle-sections">
 
             <div class="horizontal-navbar">
-            
+
                 <button id="button-day" class="horizontal-navbar-button">Day</button>
                 <button id="button-week" class="horizontal-navbar-button">Week</button>
                 <button id="button-month" class="horizontal-navbar-button">Month</button>
                 <button id="button-year" class="horizontal-navbar-button">Year</button>
-            
+
             </div>
-            
-            <span id="span-username" class="span-username" style="margin-left: 5px; margin-bottom: 10px;">Hello, Luca</span>
-                <div class="div-add-new-expense">
-                    <div>
-                        <span class="span-budget-text">Budget:</span><span class="span-budget-value">300</span>
-                        <span class="currency" style="font-size: 30px;">RON</span>
+
+            <span id="span-username" class="span-username" style="margin-left: 5px; margin-bottom: 10px;">Hello,
+                Luca</span>
+
+            <div id="div-add-new-expense" class="div-add-new-expense">
+                <div style="margin-bottom: 10px;" id="div-budget">
+                    <span class="span-budget-text">Budget: </span><span id="span-budget-value"
+                        class="span-budget-value">300</span>
+                    <span class="currency" style="font-size: 30px;">RON</span>
+                </div>
+
+
+                <form id="form-expense" class="form-input-expense">
+                    <label for="form-input-amount">Amount:</label>
+                    <input id="form-input-amount" class="form-input-amount" type="number" min="1" max="99999" 
+                        name="amount" required><br><br>
+
+                    <label for="form-input-category">Category:</label>
+                    <select class="form-input-category" id="form-input-category" name="category" required>
+                        <option class="form-input-category-option" value="">Select a category</option>
+                        <option class="form-input-category-option" value="Food">Food</option>
+                        <option class="form-input-category-option" value="House">House</option>
+                        <option class="form-input-category-option" value="Car">Car</option>
+                        <option class="form-input-category-option" value="Gym">Gym</option>
+                        <option class="form-input-category-option" value="Entertainment">Entertainment</option>
+                    </select><br><br>
+
+                    <button type="submit" id="button-add-new-expense" class="button-add-new-expense">+</button>
+                </form>
+            </div>
+
+            <div id="div-statistics" class="div-statistics">
+
+                <div class="div-statistics-title">Statistics - <span id="span-period">Today</span></div>
+
+                <div class="div-individual-statistics">
+                    <span id="first-category" class="category-name">Food</span>
+                    <span id="first-amount" class="statistics-amount">50 </span>
+                    <span class="currency"> RON</span>
+                    <div class="progress-box">
+                        <div id="first-progress" class="progress">50%</div>
                     </div>
-                    <button class="button-add-new-expense">+</button>
-                </div>
-
-            <div class="div-statistics">
-
-               <div class="div-statistics-title">Statistics - <span id="span-period">Today</span></div>
-            
-                <div class="div-individual-statistics">
-                <span id="first-category" class="category-name">Food</span>
-                <span id="first-amount" class="statistics-amount">50 </span> 
-                <span class="currency"> RON</span> 
-                <div class="progress-box">
-                    <div id="first-progress" class="progress">50%</div>
-                </div>
                 </div>
 
                 <div class="div-individual-statistics">
-                <span id="second-category" class="category-name">House</span>
-                <span id="second-amount" class="statistics-amount">50</span>
-                <span class="currency">RON</span>
-                <div class="progress-box">
-                    <div id="second-progress" class="progress">50%</div>
-                </div>
-                </div>
-
-                <div class="div-individual-statistics">
-                <span id="third-category" class="category-name">Car</span>
-                <span id="third-amount" class="statistics-amount">50</span>
-                <span class="currency">RON</span>
-                <div class="progress-box">
-                    <div id="third-progress" class="progress">50%</div>
-                </div>
+                    <span id="second-category" class="category-name">House</span>
+                    <span id="second-amount" class="statistics-amount">50</span>
+                    <span class="currency">RON</span>
+                    <div class="progress-box">
+                        <div id="second-progress" class="progress">50%</div>
+                    </div>
                 </div>
 
                 <div class="div-individual-statistics">
-                <span id="fourth-category" class="category-name">Gym</span> 
-                <span id="fourth-amount" class="statistics-amount">50</span>
-                <span class="currency">RON</span>
-                <div class="progress-box">
-                    <div id="fourth-progress" class="progress">50%</div>
-                </div>
+                    <span id="third-category" class="category-name">Car</span>
+                    <span id="third-amount" class="statistics-amount">50</span>
+                    <span class="currency">RON</span>
+                    <div class="progress-box">
+                        <div id="third-progress" class="progress">50%</div>
+                    </div>
                 </div>
 
                 <div class="div-individual-statistics">
-                <span id="fifth-category" class="category-name">Entertainment</span>
-                <span id="fifth-amount" class="statistics-amount">50</span>
-                <span class="currency">RON</span>
-                <div class="progress-box">
-                    <div id="fifth-progress" class="progress">50%</div>
+                    <span id="fourth-category" class="category-name">Gym</span>
+                    <span id="fourth-amount" class="statistics-amount">50</span>
+                    <span class="currency">RON</span>
+                    <div class="progress-box">
+                        <div id="fourth-progress" class="progress">50%</div>
+                    </div>
                 </div>
+
+                <div class="div-individual-statistics">
+                    <span id="fifth-category" class="category-name">Entertainment</span>
+                    <span id="fifth-amount" class="statistics-amount">50</span>
+                    <span class="currency">RON</span>
+                    <div class="progress-box">
+                        <div id="fifth-progress" class="progress">50%</div>
+                    </div>
                 </div>
-                <div class="div-statistics-total">Money spent - <span id="span-total">0</span> <span class="currency">RON</span></div>
+                <div class="div-statistics-total">Money spent - <span id="span-total">0</span> <span
+                        class="currency">RON</span></div>
 
             </div>
         </div>
@@ -103,7 +132,7 @@
             <span class="span-history-title">History</span>
             <span class="span-history-date">Today</span>
             <div class="div-history-list">
-              
+
             </div>
         </div>
 

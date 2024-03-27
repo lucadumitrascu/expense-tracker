@@ -16,7 +16,7 @@ footer {
 
 .page-organization {
     display:grid;
-    grid-template-columns: 200px auto 300px;
+    grid-template-columns: 210px auto 300px;
 }
 
 
@@ -46,7 +46,7 @@ footer {
     background-image: linear-gradient(rgb(144, 123, 238),rgb(28, 120, 162), rgb(74, 33, 255));
     display: flex; 
     flex-direction: column;
-    width: 180px;
+    width: 190px;
     margin: 0px;
     height: calc(100vh - 20px);
     padding: 10px;
@@ -59,6 +59,8 @@ footer {
 .group-middle-sections {
     display: flex;
     flex-direction: column;
+    overflow: auto;
+    height: 90vh;
 }
 
 /* Navbar (top-middle) */
@@ -94,7 +96,7 @@ footer {
 
 /* Add new expense (middle) */
 
-.div-add-new-expense {
+.div-add-new-expense,.div-add-new-category {
     display: flex;
     flex-direction: column;
     align-self: center;
@@ -102,15 +104,24 @@ footer {
     justify-content: center;
     border: 2px solid rgb(74, 33, 255);
     border-radius: 10px;
-    padding: 10px;
-    height: 200px;
+    padding: 20px;
     width: 500px;
 }
-.span-budget-text,.span-budget-value{
+.span-insufficient-funds,.span-category-exists {
+    display: block;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    color:red;
+    margin-bottom: 10px;
+    
+}
+.span-budget-text,.span-budget-value,.span-add-new-category{
     font-size: 30px;
     font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     color: rgb(28, 48, 162);
     font-weight: bold;
+    margin-bottom: 50px;
 }
 .currency {
     font-size: 20px;
@@ -118,7 +129,31 @@ footer {
     color: rgb(28, 48, 162);
     font-weight: bold;
 }
-.button-add-new-expense {
+
+.form-input-expense {
+    font-weight: bold;
+}
+
+.form-input-amount {
+    border: 3px solid rgb(74, 33, 255);
+    border-radius: 30px;
+    padding:  5px;
+    margin: 0px;
+    width: 10.5vw;
+    text-align: center;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.form-input-category {
+    border: 3px solid rgb(74, 33, 255);
+    border-radius: 30px;
+    margin: 0px;
+    padding:  5px;
+    text-align: center;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.button-add-new-expense,.button-add-new-category {
     background-color: rgb(74, 33, 255);
     font-size: 40px;
     border: none;
@@ -128,7 +163,7 @@ footer {
     border-radius: 50px;
     align-self: center;
 }
-.button-add-new-expense:hover {
+.button-add-new-expense:hover,.button-add-new-category:hover {
     cursor: pointer;
 }
 
@@ -246,4 +281,17 @@ footer {
 .history-period {
     text-align: center;
     border-bottom: 1px solid rgb(28, 48, 162);
+}
+
+
+/* Add new category */
+.input-category {
+    border: 3px solid rgb(74, 33, 255);
+    border-radius: 30px;
+    padding:  5px;
+    margin: 0px;
+    width: 15vw;
+    text-align: center;
+    align-self: center;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
