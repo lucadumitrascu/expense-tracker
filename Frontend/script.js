@@ -38,8 +38,8 @@ var currency = "RON";
 var spanUsername = document.getElementById("span-username");
 spanUsername.innerHTML = "Hello, " + user1.name;
 
-var spanBudget = document.getElementById('span-budget-value');
-spanBudget.innerHTML = user1.budget;
+var spanBudgetValue = document.getElementById('span-budget-value');
+spanBudgetValue.innerHTML = user1.budget;
 var numberOfCategories = 5;
 /* Currency */
 var currencyHTML = document.querySelectorAll('.currency');
@@ -60,11 +60,97 @@ var divGroupMiddleSections = document.getElementById('div-group-middle-sections'
 
 var errorMessageSet = false;
 
+
+
+
 /* ------------------------------------------------------------------------------------ */
 
-/* Change currency functionality */
+/* Home button */
 
 /* ------------------------------------------------------------------------------------ */
+
+var buttonHome = document.getElementById('button-home');
+buttonHome.addEventListener("click", function () {
+    divAddNewExpense.style.display = "block";
+
+    formAddNewCategory.reset();
+    buttonAddCategoryClicked = false;
+    divAddNewCategory.style.display = "none";
+});
+
+
+/* ------------------------------------------------------------------------------------ */
+
+/* Change budget functionality*/
+
+/* ------------------------------------------------------------------------------------ */
+
+
+var buttonChangeBudget = document.getElementById('button-change-budget');
+var spanBudgetText = document.getElementById('span-budget-text');
+var buttonChangeBudgetClicked = false;
+var oldBudgetValue = 0;
+var newBudgetValue = 0;
+
+buttonChangeBudget.addEventListener("click", function () {
+
+    if (!buttonChangeBudgetClicked) {
+        buttonChangeBudgetClicked = true;
+
+        oldBudgetValue = parseInt(spanBudgetValue.innerText);
+
+        // Append "editable" styles
+        buttonChangeBudget.style = "color: rgb(0, 198, 0);font-weight: bold; border: 1px solid white;";
+        buttonChangeBudget.innerHTML = "<i class='fa fa-usd'style='margin-right: 13px; margin-left: 5px;'></i>Save Budget";
+
+        spanBudgetText.innerHTML = "Edit Budget: ";
+
+        spanBudgetValue.style = "color: grey; border: 1px solid green";
+        spanBudgetValue.contentEditable = true;
+
+        spanBudgetValue.addEventListener("keydown", function (event) {
+
+            // Configurate spanBudgetValue to accept only numbers and needed characters
+            var keyCode = event.code;
+
+            var isDigit = (keyCode.startsWith("Digit"));
+            var isEnter = (keyCode === "Enter");
+            var isBackspace = (keyCode === "Backspace");
+            var isArrowLeft = (keyCode === "ArrowLeft");
+            var isArrowRight = (keyCode === "ArrowRight");
+
+            if (isEnter) {
+                event.preventDefault();
+            }
+            if (!isDigit && !isBackspace && !isArrowLeft && !isArrowRight) {
+                event.preventDefault();
+            }
+        });
+    }
+    else {
+        buttonChangeBudgetClicked = false;
+
+        newBudgetValue = spanBudgetValue.innerText;
+        if (newBudgetValue === "" || parseInt(newBudgetValue) === 0 || parseInt(newBudgetValue) > 99999) {
+            spanBudgetValue.innerText = oldBudgetValue;
+        }
+        else {
+            spanBudgetValue.innerText = newBudgetValue;
+        }
+
+        // Append normal styles
+        buttonChangeBudget.style = "";
+        buttonChangeBudget.innerHTML = "<i class='fa fa-usd'style='margin-right: 13px; margin-left: 5px;'></i>Change Budget";
+        buttonChangeBudget.classList.add('vertical-navbar-button');
+
+        spanBudgetText.innerHTML = "Budget: ";
+
+        spanBudgetValue.style = "";
+        spanBudgetValue.classList.add("span-budget-value");
+
+        spanBudgetValue.contentEditable = false;
+    }
+})
 
 
 
@@ -253,12 +339,12 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
     event.preventDefault();
     var amount = document.getElementById("form-input-amount").value;
     var category = document.getElementById("form-input-category").value;
-    var budgetValue = parseInt(spanBudget.innerText) - parseInt(amount);
+    var budgetValue = parseInt(spanBudgetValue.innerText) - parseInt(amount);
 
     if (budgetValue < 0) {
         if (!errorMessageSet) {
             errorMessageSet = true;
-        
+
             spanInsufficientFunds.classList.add('span-insufficient-funds');
             spanInsufficientFunds.innerText = "Insufficent Funds!";
             formExpense.insertBefore(spanInsufficientFunds, formExpense.firstChild);
@@ -273,7 +359,7 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
         if (spanInsufficientFunds != undefined) {
             spanInsufficientFunds.remove();
         }
-        spanBudget.innerHTML = budgetValue;
+        spanBudgetValue.innerHTML = budgetValue;
         dayClicked = false;
         buttonDay.click();
         document.getElementById("form-expense").reset();

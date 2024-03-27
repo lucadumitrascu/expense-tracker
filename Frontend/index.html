@@ -18,7 +18,7 @@
         <div class="vertical-navbar">
             <h1 class="vertical-navbar-title">Expenses Tracker</h1>
 
-            <button class="vertical-navbar-button"><i class="fa fa-home"
+            <button id="button-home" class="vertical-navbar-button"><i class="fa fa-home"
                     style="margin-right: 5px; margin-left: 1px;"></i>Home</button>
             <button class="vertical-navbar-button"><i class="fa fa-user-o"
                     style="margin-right: 9px; margin-left: 2px;"></i>Profile</button>
@@ -28,8 +28,8 @@
                     style="margin-right: 10px; margin-left: 5px;"></i>Change currency</button>
             <button id="button-add-new-category" class="vertical-navbar-button"><i class="fa fa-plus-circle"
                     style="margin-right: 9px; margin-left: 2px;"></i>Add Category</button>
-            <button class="vertical-navbar-button"><i class="fa fa-usd"
-                    style="margin-right: 13px; margin-left: 5px;"></i>Add Budget</button>
+            <button id="button-change-budget"class="vertical-navbar-button"><i class="fa fa-usd"
+                    style="margin-right: 13px; margin-left: 5px;"></i>Change Budget</button>
 
         </div>
 
@@ -49,7 +49,7 @@
 
             <div id="div-add-new-expense" class="div-add-new-expense">
                 <div style="margin-bottom: 10px;" id="div-budget">
-                    <span class="span-budget-text">Budget: </span><span id="span-budget-value"
+                    <span id="span-budget-text" class="span-budget-text">Budget: </span><span id="span-budget-value"
                         class="span-budget-value">300</span>
                     <span class="currency" style="font-size: 30px;">RON</span>
                 </div>
