@@ -24,12 +24,21 @@
                     style="margin-right: 9px; margin-left: 2px;"></i>Profile</button>
             <button class="vertical-navbar-button"><i class="fa fa-money"
                     style="margin-right: 5px; margin-left: 0px;"></i>Exchange rate</button>
-            <button class="vertical-navbar-button"><i class="fa fa-eur"
+            <button id="button-change-currency" class="vertical-navbar-button"><i class="fa fa-eur"
                     style="margin-right: 10px; margin-left: 5px;"></i>Change currency</button>
+            <div id="div-currency-options" class="div-currency-options">
+                <span class="span-select-currency">Select currency</span>
+                <button class="button-select-currency">RON</button>
+                <button class="button-select-currency">$</button>
+                <button class="button-select-currency">€</button>
+            </div>
+            <button id="button-change-budget" class="vertical-navbar-button"><i class="fa fa-usd"
+                    style="margin-right: 13px; margin-left: 5px;"></i>Change Budget</button>
             <button id="button-add-new-category" class="vertical-navbar-button"><i class="fa fa-plus-circle"
                     style="margin-right: 9px; margin-left: 2px;"></i>Add Category</button>
-            <button id="button-change-budget"class="vertical-navbar-button"><i class="fa fa-usd"
-                    style="margin-right: 13px; margin-left: 5px;"></i>Change Budget</button>
+
+
+
 
         </div>
 
@@ -57,7 +66,7 @@
 
                 <form id="form-expense" class="form-input-expense">
                     <label for="form-input-amount">Amount:</label>
-                    <input id="form-input-amount" class="form-input-amount" type="number" min="1" max="99999" 
+                    <input id="form-input-amount" class="form-input-amount" type="number" min="0" step="any" max="999999"
                         name="amount" required><br><br>
 
                     <label for="form-input-category">Category:</label>

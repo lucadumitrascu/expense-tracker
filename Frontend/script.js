@@ -44,9 +44,7 @@ var numberOfCategories = 5;
 /* Currency */
 var currencyHTML = document.querySelectorAll('.currency');
 
-currencyHTML.forEach(function (currency) {
-    currency.innerHTML = this.currency;
-})
+
 
 /* Statistics and categories */
 var statisticsProgress = document.querySelectorAll('.progress');
@@ -79,9 +77,125 @@ buttonHome.addEventListener("click", function () {
 });
 
 
+
 /* ------------------------------------------------------------------------------------ */
 
-/* Change budget functionality*/
+/* Change currency functionality */
+
+/* ------------------------------------------------------------------------------------ */
+
+var buttonChangeCurrency = document.getElementById('button-change-currency');
+var buttonChangeCurrencyClicked = false;
+
+var buttonCurrencies = document.querySelectorAll('.button-select-currency');
+var oldCurrency;
+var divCurrencyOptions = document.getElementById('div-currency-options');
+
+buttonChangeCurrency.addEventListener("click", function () {
+    if (!buttonChangeCurrencyClicked) {
+        buttonChangeCurrencyClicked = true;
+        oldCurrency = currency;
+        divCurrencyOptions.style = "display: flex; flex-direction: column;";
+    }
+    else {
+        buttonChangeCurrencyClicked = false;
+        divCurrencyOptions.style = "display: none";
+    }
+});
+buttonCurrencies[0].addEventListener("click", function () {
+    divCurrencyOptions.style = "display: none;";
+    buttonChangeCurrencyClicked = false;
+    if (oldCurrency != "RON") {
+        currency = "RON";
+        currencyHTML.forEach(function (currency1) {
+            currency1.innerText = currency;
+        });
+        if (oldCurrency === "$") {
+            var newValue = parseFloat(spanBudgetValue.innerText) * 4.59892;
+            spanBudgetValue.innerText = newValue.toFixed(2);
+            expenses1.forEach(function(expense){
+                expense.sum = expense.sum * 4.59892;
+                
+            });
+        }
+        if (oldCurrency === "€") {
+            var newValue = parseFloat(spanBudgetValue.innerText) * 4.97347;
+            spanBudgetValue.innerText = newValue.toFixed(2);
+            expenses1.forEach(function(expense){
+                expense.sum = expense.sum * 4.97347;
+               
+            });
+        }
+        dayClicked = false;
+        buttonDay.click();
+        oldCurrency = currency;
+    }
+});
+
+buttonCurrencies[1].addEventListener("click", function () {
+    divCurrencyOptions.style = "display: none;";
+    buttonChangeCurrencyClicked = false;
+    if (oldCurrency != "$") {
+        currency = "$";
+        currencyHTML.forEach(function (currency1) {
+            currency1.innerText = currency;
+        });
+        if (oldCurrency === "RON") {
+            var newValue = parseFloat(spanBudgetValue.innerText) / 4.59892;
+            spanBudgetValue.innerText = newValue.toFixed(2);
+            expenses1.forEach(function(expense){
+                expense.sum = expense.sum / 4.59892;
+   
+            });
+        }
+        if (oldCurrency === "€") {
+            var newValue = parseFloat(spanBudgetValue.innerText) / 0.924737;
+            spanBudgetValue.innerText = newValue.toFixed(2);
+            expenses1.forEach(function(expense){
+                expense.sum = expense.sum / 0.924737;
+      
+            });
+        }
+        dayClicked = false;
+        buttonDay.click();
+        oldCurrency = currency;
+    }
+});
+
+buttonCurrencies[2].addEventListener("click", function () {
+    divCurrencyOptions.style = "display: none;";
+    buttonChangeCurrencyClicked = false;
+    if (oldCurrency != "€") {
+        currency = "€";
+        currencyHTML.forEach(function (currency1) {
+            currency1.innerText = currency;
+        });
+        if (oldCurrency === "RON") {
+            var newValue = parseFloat(spanBudgetValue.innerText) / 4.97347;
+            spanBudgetValue.innerText = newValue.toFixed(2);
+            expenses1.forEach(function(expense){
+                expense.sum = expense.sum / 4.97347;
+
+            });
+        }
+        if (oldCurrency === "$") {
+            var newValue = parseFloat(spanBudgetValue.innerText) * 0.924737;
+            spanBudgetValue.innerText = newValue.toFixed(2);
+            expenses1.forEach(function(expense){
+                expense.sum = expense.sum * 0.924737;
+ 
+            });
+        }
+        dayClicked = false;
+        buttonDay.click();
+        oldCurrency = currency;
+    }
+});
+
+
+/* ------------------------------------------------------------------------------------ */
+
+/* Change budget functionality */
 
 /* ------------------------------------------------------------------------------------ */
 
@@ -97,7 +211,7 @@ buttonChangeBudget.addEventListener("click", function () {
     if (!buttonChangeBudgetClicked) {
         buttonChangeBudgetClicked = true;
 
-        oldBudgetValue = parseInt(spanBudgetValue.innerText);
+        oldBudgetValue = parseFloat(spanBudgetValue.innerText);
 
         // Append "editable" styles
         buttonChangeBudget.style = "color: rgb(0, 198, 0);font-weight: bold; border: 1px solid white;";
@@ -131,8 +245,11 @@ buttonChangeBudget.addEventListener("click", function () {
         buttonChangeBudgetClicked = false;
 
         newBudgetValue = spanBudgetValue.innerText;
-        if (newBudgetValue === "" || parseInt(newBudgetValue) === 0 || parseInt(newBudgetValue) > 99999) {
+        if (newBudgetValue === "" || parseFloat(newBudgetValue) === 0) {
             spanBudgetValue.innerText = oldBudgetValue;
+        }
+        else if (parseFloat(newBudgetValue) > 99999) {
+            spanBudgetValue.innerText = "99999";
         }
         else {
             spanBudgetValue.innerText = newBudgetValue;
@@ -264,15 +381,17 @@ function createNewCategory(value) {
 
     var spanCategoryAmount = document.createElement('span');
     spanCategoryAmount.classList.add('statistics-amount');
-    spanCategoryAmount.innerText = "0";
+    spanCategoryAmount.innerText = "0.00";
     divNewCategoryInStatistics.appendChild(spanCategoryAmount);
     divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
 
     var spanCurrency = document.createElement('span');
     spanCurrency.classList.add('currency');
-    spanCurrency.innerText = currency;
     divNewCategoryInStatistics.appendChild(spanCurrency);
     divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
+    
+
+    spanCurrency.innerText = currency;
 
     var divProgressBox = document.createElement('div');
     divProgressBox.classList.add('progress-box');
@@ -287,6 +406,7 @@ function createNewCategory(value) {
     divStatistics.insertBefore(divNewCategoryInStatistics,
         document.querySelector('.div-statistics-total'));
 
+    currencyHTML = document.querySelectorAll('.currency');
     statisticsCategory = document.querySelectorAll('.category-name');
     statisticsAmount = document.querySelectorAll('.statistics-amount');
     statisticsProgress = document.querySelectorAll('.progress');
@@ -339,7 +459,7 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
     event.preventDefault();
     var amount = document.getElementById("form-input-amount").value;
     var category = document.getElementById("form-input-category").value;
-    var budgetValue = parseInt(spanBudgetValue.innerText) - parseInt(amount);
+    var budgetValue = parseFloat(spanBudgetValue.innerText) - parseFloat(amount);
 
     if (budgetValue < 0) {
         if (!errorMessageSet) {
@@ -359,7 +479,7 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
         if (spanInsufficientFunds != undefined) {
             spanInsufficientFunds.remove();
         }
-        spanBudgetValue.innerHTML = budgetValue;
+        spanBudgetValue.innerHTML = budgetValue.toFixed(2);
         dayClicked = false;
         buttonDay.click();
         document.getElementById("form-expense").reset();
@@ -367,7 +487,7 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
 });
 
 function setNewExpenseToList(amount, category) {
-    var newExpense = new Expense(category, parseInt(amount), new Date());
+    var newExpense = new Expense(category, parseFloat(amount), new Date());
     expenses1.push(newExpense);
 }
 
@@ -538,7 +658,7 @@ function populateHistory(expenses, period) {
         divHistoryItem.classList.add('div-history-list');
 
         var expenseSpan = document.createElement('span');
-        expenseSpan.textContent = expense.category + ': ' + expense.sum + ' ';
+        expenseSpan.textContent = expense.category + ': ' + (expense.sum).toFixed(2)+ ' ';
 
         var currencySpan = document.createElement('span');
         currencySpan.classList.add('currency');
@@ -559,6 +679,7 @@ function calculateStatistics(expenses) {
     }
     var total = 0;
 
+
     expenses.forEach(function (expense) {
         for (var i = 0; i < numberOfCategories; i++) {
             if (expense.category === statisticsCategory[i].innerHTML) {
@@ -569,14 +690,13 @@ function calculateStatistics(expenses) {
     });
 
     // Set total money spent and category spent
-    totalMoneySpent.innerHTML = total;
+    totalMoneySpent.innerHTML = total.toFixed(2);
     for (var i = 0; i < numberOfCategories; i++) {
-        statisticsAmount[i].innerHTML = categorySumVector[i];
+        statisticsAmount[i].innerHTML = categorySumVector[i].toFixed(2);
     }
 
     if (total === 0) {
         for (var i = 0; i < numberOfCategories; i++) {
-            console.log("TOTAL");
             this.statisticsProgress[i].innerHTML = "0%";
             this.statisticsProgress[i].style.width = "0px";
         }
@@ -588,7 +708,7 @@ function calculateStatistics(expenses) {
         for (var i = 0; i < numberOfCategories; i++) {
             percentage = categorySumVector[i] / total * 100;
             statisticsProgress[i].innerHTML = Math.round(percentage) + "%";
-            statisticsProgress[i].style.width = percentage / 100 * 500 + "px";
+            statisticsProgress[i].style.width = percentage.toFixed(2) / 100 * 500 + "px";
         }
     }
 }
