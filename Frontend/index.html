@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
     <title>Expenses Tracker</title>
 </head>
 
@@ -20,12 +18,10 @@
 
             <button id="button-home" class="vertical-navbar-button"><i class="fa fa-home"
                     style="margin-right: 5px; margin-left: 1px;"></i>Home</button>
-            <button class="vertical-navbar-button"><i class="fa fa-user-o"
-                    style="margin-right: 9px; margin-left: 2px;"></i>Profile</button>
-            <button class="vertical-navbar-button"><i class="fa fa-money"
-                    style="margin-right: 5px; margin-left: 0px;"></i>Exchange rate</button>
+            <button id="button-change-name" class="vertical-navbar-button"><i class="fa fa-user-o"
+                    style="margin-right: 9px; margin-left: 2px;"></i>Change Name</button>
             <button id="button-change-currency" class="vertical-navbar-button"><i class="fa fa-eur"
-                    style="margin-right: 10px; margin-left: 5px;"></i>Change currency</button>
+                    style="margin-right: 10px; margin-left: 5px;"></i>Change Currency</button>
             <div id="div-currency-options" class="div-currency-options">
                 <span class="span-select-currency">Select currency</span>
                 <button class="button-select-currency">RON</button>
@@ -36,9 +32,6 @@
                     style="margin-right: 13px; margin-left: 5px;"></i>Change Budget</button>
             <button id="button-add-new-category" class="vertical-navbar-button"><i class="fa fa-plus-circle"
                     style="margin-right: 9px; margin-left: 2px;"></i>Add Category</button>
-
-
-
 
         </div>
 
@@ -53,21 +46,22 @@
 
             </div>
 
-            <span id="span-username" class="span-username" style="margin-left: 5px; margin-bottom: 10px;">Hello,
-                Luca</span>
-
+            <div class="div-username" style="margin: 5px;">
+                <span class="span-username">Hello, </span>
+                <span id="span-username" class="span-username">Luca</span>
+            </div>
             <div id="div-add-new-expense" class="div-add-new-expense">
                 <div style="margin-bottom: 10px;" id="div-budget">
                     <span id="span-budget-text" class="span-budget-text">Budget: </span><span id="span-budget-value"
-                        class="span-budget-value">300</span>
+                        class="span-budget-value">300.00</span>
                     <span class="currency" style="font-size: 30px;">RON</span>
                 </div>
 
 
                 <form id="form-expense" class="form-input-expense">
                     <label for="form-input-amount">Amount:</label>
-                    <input id="form-input-amount" class="form-input-amount" type="number" min="0" step="any" max="999999"
-                        name="amount" required><br><br>
+                    <input id="form-input-amount" class="form-input-amount" type="number" min="0" step="any"
+                        max="999999" maxlength="6" name="amount" required><br><br>
 
                     <label for="form-input-category">Category:</label>
                     <select class="form-input-category" id="form-input-category" name="category" required>

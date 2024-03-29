@@ -14,49 +14,132 @@ function Expense(category, sum, data) {
     this.sum = sum;
     this.data = data;
 }
-var expenses1 = [
-    new Expense("Food", 50, new Date("2024-03-24")),
-    new Expense("Gym", 80, new Date("2024-03-24")),
-    new Expense("Car", 120, new Date("2024-03-24")),
-    new Expense("Food", 60, new Date("2024-03-25")),
-    new Expense("Gym", 90, new Date("2024-03-21")),
-    new Expense("Car", 110, new Date("2024-03-20")),
-    new Expense("Food", 55, new Date("2024-03-23")),
-    new Expense("Gym", 85, new Date("2024-03-22")),
-    new Expense("Car", 125, new Date("2024-03-21")),
-    new Expense("Food", 40, new Date("2024-03-10")),
-    new Expense("Gym", 70, new Date("2024-03-11")),
-    new Expense("Car", 100, new Date("2024-03-12")),
-    new Expense("House", 150, new Date("2024-02-15")),
-    new Expense("Gym", 200, new Date("2024-02-20")),
-    new Expense("Entertainment", 180, new Date("2024-02-29"))
-];
 
-var user1 = new User("Luca", expenses1, 300);
-var currency = "RON";
+let xmlString = `<?xml version="1.0" encoding="UTF-8"?>
+<user>
+    <name>Luca</name>
+    <budget>300</budget>
+    <expenses>
+        <expense>
+            <category>Food</category>
+            <sum>50</sum>
+            <date>2024-03-29</date>
+        </expense>
+        <expense>
+            <category>Gym</category>
+            <sum>80</sum>
+            <date>2024-03-29</date>
+        </expense>
+        <expense>
+            <category>Food</category>
+            <sum>60</sum>
+            <date>2024-03-22</date>
+        </expense>
+        <expense>
+            <category>Gym</category>
+            <sum>90</sum>
+            <date>2024-03-23</date>
+        </expense>
+        <expense>
+            <category>Car</category>
+            <sum>120</sum>
+            <date>2024-03-25</date>
+        </expense>
+        <expense>
+            <category>Car</category>
+            <sum>110</sum>
+            <date>2024-03-27</date>
+        </expense>
+        <expense>
+            <category>Food</category>
+            <sum>55</sum>
+            <date>2024-03-12</date>
+        </expense>
+        <expense>
+            <category>Gym</category>
+            <sum>85</sum>
+            <date>2024-03-10</date>
+        </expense>
+        <expense>
+            <category>Car</category>
+            <sum>125</sum>
+            <date>2024-03-18</date>
+        </expense>
+        <expense>
+            <category>Food</category>
+            <sum>40</sum>
+            <date>2024-02-25</date>
+        </expense>
+        <expense>
+            <category>Gym</category>
+            <sum>70</sum>
+            <date>2024-02-19</date>
+        </expense>
+        <expense>
+            <category>Car</category>
+            <sum>100</sum>
+            <date>2024-02-01</date>
+        </expense>
+        <expense>
+            <category>House</category>
+            <sum>150</sum>
+            <date>2024-02-15</date>
+        </expense>
+        <expense>
+            <category>Gym</category>
+            <sum>200</sum>
+            <date>2024-02-20</date>
+        </expense>
+        <expense>
+            <category>Entertainment</category>
+            <sum>180</sum>
+            <date>2024-02-29</date>
+        </expense>
+    </expenses>
+</user>
+`;
 
-var spanUsername = document.getElementById("span-username");
-spanUsername.innerHTML = "Hello, " + user1.name;
 
-var spanBudgetValue = document.getElementById('span-budget-value');
-spanBudgetValue.innerHTML = user1.budget;
-var numberOfCategories = 5;
+const xmlDoc = new DOMParser().parseFromString(xmlString, "text/xml");
+let userName = xmlDoc.querySelector('name').textContent;
+let userBudget = parseFloat(xmlDoc.querySelector('budget').textContent);
+
+let user = new User(userName, [], userBudget);
+
+let expenseNodes = xmlDoc.querySelectorAll('expense');
+expenseNodes.forEach(function (expenseNode) {
+    let category = expenseNode.querySelector('category').textContent;
+    let sum = parseFloat(expenseNode.querySelector('sum').textContent);
+    let date = new Date(expenseNode.querySelector('date').textContent);
+    let expense = new Expense(category, sum, date);
+    user.expenses.push(expense);
+});
+
+let currency = "RON";
+
+let spanUsername = document.getElementById("span-username");
+spanUsername.innerHTML = user.name;
+
+let spanBudgetValue = document.getElementById('span-budget-value');
+spanBudgetValue.innerHTML = user.budget;
+let numberOfCategories = 5;
+
 /* Currency */
-var currencyHTML = document.querySelectorAll('.currency');
-
+let currencyHTML = document.querySelectorAll('.currency');
 
 
 /* Statistics and categories */
-var statisticsProgress = document.querySelectorAll('.progress');
-var statisticsAmount = document.querySelectorAll('.statistics-amount');
-var statisticsCategory = document.querySelectorAll('.category-name');
+let statisticsProgress = document.querySelectorAll('.progress');
+let statisticsAmount = document.querySelectorAll('.statistics-amount');
+let statisticsCategory = document.querySelectorAll('.category-name');
 
 
-var divAddNewExpense = document.getElementById('div-add-new-expense');
-var divStatistics = document.getElementById('div-statistics');
-var divGroupMiddleSections = document.getElementById('div-group-middle-sections');
+let divAddNewExpense = document.getElementById('div-add-new-expense');
+let divStatistics = document.getElementById('div-statistics');
+let divGroupMiddleSections = document.getElementById('div-group-middle-sections');
 
-var errorMessageSet = false;
+let errorMessageSet = false;
+
 
 
 
@@ -67,7 +150,7 @@ var errorMessageSet = false;
 
 /* ------------------------------------------------------------------------------------ */
 
-var buttonHome = document.getElementById('button-home');
+let buttonHome = document.getElementById('button-home');
 buttonHome.addEventListener("click", function () {
     divAddNewExpense.style.display = "block";
 
@@ -78,28 +161,107 @@ buttonHome.addEventListener("click", function () {
 
 
 
+
+
+
+
+
+/* ------------------------------------------------------------------------------------ */
+
+/* Change name functionality */
+
+/* ------------------------------------------------------------------------------------ */
+
+
+let buttonChangeName = document.getElementById('button-change-name');
+//spanusername
+let buttonChangeNameClicked = false;
+let oldName;
+buttonChangeName.addEventListener("click", function () {
+
+    if (!buttonChangeNameClicked) {
+        buttonChangeNameClicked = true;
+
+        oldName = spanUsername.innerText;
+        // Append "editable" styles
+        buttonChangeName.style = "color: palegreen;font-weight: bold; border: 1px solid white;";
+        buttonChangeName.innerHTML = "<i class='fa fa-usd'style='margin-right: 13px; margin-left: 5px;'></i>Save Name";
+
+        spanUsername.style = "color: grey; border: 1px solid green";
+        spanUsername.contentEditable = true;
+
+        spanUsername.addEventListener("keydown", function (event) {
+
+            let keyCode = event.code;
+
+            let isEnter = (keyCode === "Enter");
+            let isBackspace = (keyCode === "Backspace");
+            let isArrowLeft = (keyCode === "ArrowLeft");
+            let isArrowRight = (keyCode === "ArrowRight");
+
+            if (isEnter) {
+                event.preventDefault();
+            }
+            if (spanUsername.innerText.length > 20 && !isBackspace && !isArrowLeft && !isArrowRight) {
+                event.preventDefault();
+            }
+        });
+    }
+    else {
+        buttonChangeNameClicked = false;
+
+        if (spanUsername.innerText.length === 0) {
+            spanUsername.innerText = oldName;
+        }
+        user.name = spanUsername.innerText;
+        // Append normal styles
+        buttonChangeName.style = "";
+        buttonChangeName.innerHTML = "<i class='fa fa-usd'style='margin-right: 13px; margin-left: 5px;'></i>Change Name";
+        buttonChangeName.classList.add('vertical-navbar-button');
+
+
+        spanUsername.style = "";
+        spanUsername.classList.add("span-budget-value");
+
+        spanUsername.contentEditable = false;
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
 /* ------------------------------------------------------------------------------------ */
 
 /* Change currency functionality */
 
 /* ------------------------------------------------------------------------------------ */
 
-var buttonChangeCurrency = document.getElementById('button-change-currency');
-var buttonChangeCurrencyClicked = false;
+let buttonChangeCurrency = document.getElementById('button-change-currency');
+let buttonChangeCurrencyClicked = false;
 
-var buttonCurrencies = document.querySelectorAll('.button-select-currency');
-var oldCurrency;
-var divCurrencyOptions = document.getElementById('div-currency-options');
+let buttonCurrencies = document.querySelectorAll('.button-select-currency');
+let oldCurrency;
+let divCurrencyOptions = document.getElementById('div-currency-options');
 
 buttonChangeCurrency.addEventListener("click", function () {
     if (!buttonChangeCurrencyClicked) {
         buttonChangeCurrencyClicked = true;
         oldCurrency = currency;
         divCurrencyOptions.style = "display: flex; flex-direction: column;";
+        buttonChangeCurrency.style.border = "1px solid white";
     }
     else {
         buttonChangeCurrencyClicked = false;
         divCurrencyOptions.style = "display: none";
+        buttonChangeCurrency.style = "";
+        buttonChangeCurrency.classList.add('vertical-navbar-button');
     }
 });
 buttonCurrencies[0].addEventListener("click", function () {
@@ -111,24 +273,26 @@ buttonCurrencies[0].addEventListener("click", function () {
             currency1.innerText = currency;
         });
         if (oldCurrency === "$") {
-            var newValue = parseFloat(spanBudgetValue.innerText) * 4.59892;
+            let newValue = parseFloat(spanBudgetValue.innerText) * 4.59892;
             spanBudgetValue.innerText = newValue.toFixed(2);
-            expenses1.forEach(function(expense){
+            user.expenses.forEach(function (expense) {
                 expense.sum = expense.sum * 4.59892;
-                
+
             });
         }
         if (oldCurrency === "€") {
-            var newValue = parseFloat(spanBudgetValue.innerText) * 4.97347;
+            let newValue = parseFloat(spanBudgetValue.innerText) * 4.97347;
             spanBudgetValue.innerText = newValue.toFixed(2);
-            expenses1.forEach(function(expense){
+            user.expenses.forEach(function (expense) {
                 expense.sum = expense.sum * 4.97347;
-               
+
             });
         }
         dayClicked = false;
         buttonDay.click();
         oldCurrency = currency;
+        buttonChangeCurrency.style = "";
+        buttonChangeCurrency.classList.add('vertical-navbar-button');
     }
 });
 
@@ -141,24 +305,26 @@ buttonCurrencies[1].addEventListener("click", function () {
             currency1.innerText = currency;
         });
         if (oldCurrency === "RON") {
-            var newValue = parseFloat(spanBudgetValue.innerText) / 4.59892;
+            let newValue = parseFloat(spanBudgetValue.innerText) / 4.59892;
             spanBudgetValue.innerText = newValue.toFixed(2);
-            expenses1.forEach(function(expense){
+            user.expenses.forEach(function (expense) {
                 expense.sum = expense.sum / 4.59892;
-   
+
             });
         }
         if (oldCurrency === "€") {
-            var newValue = parseFloat(spanBudgetValue.innerText) / 0.924737;
+            let newValue = parseFloat(spanBudgetValue.innerText) / 0.924737;
             spanBudgetValue.innerText = newValue.toFixed(2);
-            expenses1.forEach(function(expense){
+            user.expenses.forEach(function (expense) {
                 expense.sum = expense.sum / 0.924737;
-      
+
             });
         }
         dayClicked = false;
         buttonDay.click();
         oldCurrency = currency;
+        buttonChangeCurrency.style = "";
+        buttonChangeCurrency.classList.add('vertical-navbar-button');
     }
 });
 
@@ -171,26 +337,37 @@ buttonCurrencies[2].addEventListener("click", function () {
             currency1.innerText = currency;
         });
         if (oldCurrency === "RON") {
-            var newValue = parseFloat(spanBudgetValue.innerText) / 4.97347;
+            let newValue = parseFloat(spanBudgetValue.innerText) / 4.97347;
             spanBudgetValue.innerText = newValue.toFixed(2);
-            expenses1.forEach(function(expense){
+            user.expenses.forEach(function (expense) {
                 expense.sum = expense.sum / 4.97347;
 
             });
         }
         if (oldCurrency === "$") {
-            var newValue = parseFloat(spanBudgetValue.innerText) * 0.924737;
+            let newValue = parseFloat(spanBudgetValue.innerText) * 0.924737;
             spanBudgetValue.innerText = newValue.toFixed(2);
-            expenses1.forEach(function(expense){
+            user.expenses.forEach(function (expense) {
                 expense.sum = expense.sum * 0.924737;
- 
+
             });
         }
         dayClicked = false;
         buttonDay.click();
         oldCurrency = currency;
+        buttonChangeCurrency.style = "";
+        buttonChangeCurrency.classList.add('vertical-navbar-button');
     }
 });
+
+
+
+
+
+
+
+
+
 
 
 /* ------------------------------------------------------------------------------------ */
@@ -200,11 +377,11 @@ buttonCurrencies[2].addEventListener("click", function () {
 /* ------------------------------------------------------------------------------------ */
 
 
-var buttonChangeBudget = document.getElementById('button-change-budget');
-var spanBudgetText = document.getElementById('span-budget-text');
-var buttonChangeBudgetClicked = false;
-var oldBudgetValue = 0;
-var newBudgetValue = 0;
+let buttonChangeBudget = document.getElementById('button-change-budget');
+let spanBudgetText = document.getElementById('span-budget-text');
+let buttonChangeBudgetClicked = false;
+let oldBudgetValue = 0;
+let newBudgetValue = 0;
 
 buttonChangeBudget.addEventListener("click", function () {
 
@@ -214,7 +391,7 @@ buttonChangeBudget.addEventListener("click", function () {
         oldBudgetValue = parseFloat(spanBudgetValue.innerText);
 
         // Append "editable" styles
-        buttonChangeBudget.style = "color: rgb(0, 198, 0);font-weight: bold; border: 1px solid white;";
+        buttonChangeBudget.style = "color: palegreen;font-weight: bold; border: 1px solid white;";
         buttonChangeBudget.innerHTML = "<i class='fa fa-usd'style='margin-right: 13px; margin-left: 5px;'></i>Save Budget";
 
         spanBudgetText.innerHTML = "Edit Budget: ";
@@ -225,18 +402,21 @@ buttonChangeBudget.addEventListener("click", function () {
         spanBudgetValue.addEventListener("keydown", function (event) {
 
             // Configurate spanBudgetValue to accept only numbers and needed characters
-            var keyCode = event.code;
+            let keyCode = event.code;
 
-            var isDigit = (keyCode.startsWith("Digit"));
-            var isEnter = (keyCode === "Enter");
-            var isBackspace = (keyCode === "Backspace");
-            var isArrowLeft = (keyCode === "ArrowLeft");
-            var isArrowRight = (keyCode === "ArrowRight");
+            let isDigit = (keyCode.startsWith("Digit"));
+            let isEnter = (keyCode === "Enter");
+            let isBackspace = (keyCode === "Backspace");
+            let isArrowLeft = (keyCode === "ArrowLeft");
+            let isArrowRight = (keyCode === "ArrowRight");
 
             if (isEnter) {
                 event.preventDefault();
             }
             if (!isDigit && !isBackspace && !isArrowLeft && !isArrowRight) {
+                event.preventDefault();
+            }
+            if (spanBudgetValue.innerText.length > 5 && !isBackspace && !isArrowLeft && !isArrowRight) {
                 event.preventDefault();
             }
         });
@@ -247,9 +427,6 @@ buttonChangeBudget.addEventListener("click", function () {
         newBudgetValue = spanBudgetValue.innerText;
         if (newBudgetValue === "" || parseFloat(newBudgetValue) === 0) {
             spanBudgetValue.innerText = oldBudgetValue;
-        }
-        else if (parseFloat(newBudgetValue) > 99999) {
-            spanBudgetValue.innerText = "99999";
         }
         else {
             spanBudgetValue.innerText = newBudgetValue;
@@ -282,17 +459,17 @@ buttonChangeBudget.addEventListener("click", function () {
 /* Add new category functionality */
 
 /* ------------------------------------------------------------------------------------ */
-var categoryList = document.getElementById('form-input-category');
+let categoryList = document.getElementById('form-input-category');
 
 /* Button from vertical navigation bar */
-var buttonAddCategory = document.getElementById('button-add-new-category');
-var buttonAddCategoryClicked = false;
+let buttonAddCategory = document.getElementById('button-add-new-category');
+let buttonAddCategoryClicked = false;
 
-var divAddNewCategory = document.createElement('div');
-var spanAddNewCategory = document.createElement('span');
-var formAddNewCategory = document.createElement('form');
-var inputNewCategory = document.createElement('input');
-var buttonAddNewCategory = document.createElement('button');
+let divAddNewCategory = document.createElement('div');
+let spanAddNewCategory = document.createElement('span');
+let formAddNewCategory = document.createElement('form');
+let inputNewCategory = document.createElement('input');
+let buttonAddNewCategory = document.createElement('button');
 
 
 /* Create the div where user have to enter a new category */
@@ -307,11 +484,9 @@ buttonAddCategory.addEventListener("click", function () {
 
 function createDivAddNewCategory() {
     divAddNewCategory.classList.add('div-add-new-category');
-    divAddNewCategory.style.display = "block";
-
-    spanAddNewCategory.innerText = "Add new category";
+    divAddNewCategory.style = "display: flex; justify-content:center;"
+    spanAddNewCategory.innerText = "Add New Category";
     spanAddNewCategory.classList.add('span-add-new-category');
-    spanAddNewCategory.style.margin = "10px";
     divAddNewCategory.appendChild(spanAddNewCategory);
 
     inputNewCategory.classList.add('input-category');
@@ -320,12 +495,13 @@ function createDivAddNewCategory() {
     inputNewCategory.type = "text";
     inputNewCategory.maxLength = 20;
     inputNewCategory.name = "category";
+    inputNewCategory.style.marginTop = "20px";
     formAddNewCategory.appendChild(inputNewCategory);
 
     buttonAddNewCategory.classList.add('button-add-new-category');
-    buttonAddNewCategory.style.margin = "10px";
     buttonAddCategory.type = "submit";
     buttonAddNewCategory.innerText = "+";
+    buttonAddNewCategory.style = "margin:20px;"
     formAddNewCategory.appendChild(buttonAddNewCategory);
 
     formAddNewCategory.style = "display: flex; flex-direction: column;";
@@ -341,9 +517,9 @@ formAddNewCategory.addEventListener("submit", function (event) {
     event.preventDefault();
 
     // ok means this category doesn't exist
-    var ok = true;
+    let ok = true;
 
-    for (var i = 0; i < numberOfCategories; i++) {
+    for (let i = 0; i < numberOfCategories; i++) {
         if (statisticsCategory[i].innerText == inputNewCategory.value) {
             createCategoryExistsErrorMessage();
             ok = false;
@@ -370,34 +546,34 @@ formAddNewCategory.addEventListener("submit", function (event) {
 function createNewCategory(value) {
 
     // Statistics
-    var divNewCategoryInStatistics = document.createElement('div');
+    let divNewCategoryInStatistics = document.createElement('div');
     divNewCategoryInStatistics.classList.add('div-individual-statistics');
 
-    var spanCategoryName = document.createElement('span');
+    let spanCategoryName = document.createElement('span');
     spanCategoryName.classList.add('category-name');
     spanCategoryName.innerText = value;
     divNewCategoryInStatistics.appendChild(spanCategoryName);
     divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
 
-    var spanCategoryAmount = document.createElement('span');
+    let spanCategoryAmount = document.createElement('span');
     spanCategoryAmount.classList.add('statistics-amount');
     spanCategoryAmount.innerText = "0.00";
     divNewCategoryInStatistics.appendChild(spanCategoryAmount);
     divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
 
-    var spanCurrency = document.createElement('span');
+    let spanCurrency = document.createElement('span');
     spanCurrency.classList.add('currency');
     divNewCategoryInStatistics.appendChild(spanCurrency);
     divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
-    
+
 
     spanCurrency.innerText = currency;
 
-    var divProgressBox = document.createElement('div');
+    let divProgressBox = document.createElement('div');
     divProgressBox.classList.add('progress-box');
     divNewCategoryInStatistics.appendChild(divProgressBox);
 
-    var divProgress = document.createElement('div');
+    let divProgress = document.createElement('div');
     divProgress.classList.add('progress');
     divProgress.style.width = "0px";
     divProgress.innerHTML = "0%";
@@ -412,7 +588,7 @@ function createNewCategory(value) {
     statisticsProgress = document.querySelectorAll('.progress');
 
     /* Category List (from add new expense) */
-    var option = document.createElement('option');
+    let option = document.createElement('option');
     option.classList.add('form-input-category-option');
     option.innerText = value;
 
@@ -425,7 +601,7 @@ function createCategoryExistsErrorMessage() {
     if (!errorMessageSet) {
         errorMessageSet = true;
 
-        var spanCategoryExists = document.createElement('span');
+        let spanCategoryExists = document.createElement('span');
         spanCategoryExists.classList.add('span-category-exists');
         spanCategoryExists.innerText = "This category already exists!";
         formAddNewCategory.insertBefore(spanCategoryExists, formAddNewCategory.firstChild);
@@ -441,25 +617,31 @@ function createCategoryExistsErrorMessage() {
 
 
 
+
+
+
+
+
+
 /* ------------------------------------------------------------------------------------ */
 
 /* Add new expense functionality */
 
 /* ------------------------------------------------------------------------------------ */
 
-var buttonAddNewExpense = document.getElementById('button-add-new-expense');
-var formInputAmount = document.getElementById('form-input-amount');
-var formInputCategory = document.getElementById('form-input-category');
-var formExpense = document.getElementById('form-expense');
+let buttonAddNewExpense = document.getElementById('button-add-new-expense');
+let formInputAmount = document.getElementById('form-input-amount');
+let formInputCategory = document.getElementById('form-input-category');
+let formExpense = document.getElementById('form-expense');
 
 // Span Insufficient Funds 
-var spanInsufficientFunds = document.createElement('span');
+let spanInsufficientFunds = document.createElement('span');
 
 document.getElementById("form-expense").addEventListener("submit", function (event) {
     event.preventDefault();
-    var amount = document.getElementById("form-input-amount").value;
-    var category = document.getElementById("form-input-category").value;
-    var budgetValue = parseFloat(spanBudgetValue.innerText) - parseFloat(amount);
+    let amount = document.getElementById("form-input-amount").value;
+    let category = document.getElementById("form-input-category").value;
+    let budgetValue = parseFloat(spanBudgetValue.innerText) - parseFloat(amount);
 
     if (budgetValue < 0) {
         if (!errorMessageSet) {
@@ -487,9 +669,19 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
 });
 
 function setNewExpenseToList(amount, category) {
-    var newExpense = new Expense(category, parseFloat(amount), new Date());
-    expenses1.push(newExpense);
+    let newExpense = new Expense(category, parseFloat(amount), new Date());
+    user.expenses.push(newExpense);
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -501,10 +693,10 @@ function setNewExpenseToList(amount, category) {
 
 /* ------------------------------------------------------------------------------------ */
 
-var dayClicked = false;
-var weekClicked = false;
-var monthClicked = false;
-var yearClicked = false;
+let dayClicked = false;
+let weekClicked = false;
+let monthClicked = false;
+let yearClicked = false;
 
 document.addEventListener('DOMContentLoaded', function () {
     buttonDay.classList.add('button-active');
@@ -512,15 +704,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* TOP BUTTONS */
-var buttonDay = document.getElementById("button-day");
-var buttonWeek = document.getElementById("button-week");
-var buttonMonth = document.getElementById("button-month");
-var buttonYear = document.getElementById("button-year");
+let buttonDay = document.getElementById("button-day");
+let buttonWeek = document.getElementById("button-week");
+let buttonMonth = document.getElementById("button-month");
+let buttonYear = document.getElementById("button-year");
 
-var spanPeriodStatistics = document.getElementById("span-period");
+let spanPeriodStatistics = document.getElementById("span-period");
 
 /* Total money spent */
-var totalMoneySpent = document.getElementById("span-total");
+let totalMoneySpent = document.getElementById("span-total");
 
 
 /* Button onclick functions */
@@ -535,7 +727,7 @@ buttonDay.addEventListener("click", function () {
         monthClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "Today";
-        var todayExpenses = getTodayExpenses(expenses1);
+        let todayExpenses = getTodayExpenses(user.expenses);
         populateHistory(todayExpenses, 0);
         calculateStatistics(todayExpenses);
     }
@@ -552,7 +744,7 @@ buttonWeek.addEventListener("click", function () {
         monthClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "This Week";
-        var weekExpenses = getWeekExpenses(expenses1);
+        let weekExpenses = getWeekExpenses(user.expenses);
         populateHistory(weekExpenses, 1);
         calculateStatistics(weekExpenses);
     }
@@ -569,7 +761,7 @@ buttonMonth.addEventListener("click", function () {
         weekClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "This Month";
-        var monthExpenses = getMonthExpenses(expenses1);
+        let monthExpenses = getMonthExpenses(user.expenses);
         populateHistory(monthExpenses, 2);
         calculateStatistics(monthExpenses);
     }
@@ -586,7 +778,7 @@ buttonYear.addEventListener("click", function () {
         weekClicked = false;
         monthClicked = false;
         spanPeriodStatistics.innerHTML = "This Year";
-        var yearExpenses = getYearExpenses(expenses1);
+        let yearExpenses = getYearExpenses(user.expenses);
         populateHistory(yearExpenses, 3);
         calculateStatistics(yearExpenses);
     }
@@ -597,17 +789,18 @@ buttonYear.addEventListener("click", function () {
 
 
 function populateHistory(expenses, period) {
-    var divHistoryList = document.querySelector('.div-history-list');
+    let divHistoryList = document.querySelector('.div-history-list');
     divHistoryList.innerHTML = '';
 
-    var periodText = document.querySelector('.span-history-date');
+    let periodText = document.querySelector('.span-history-date');
 
-    var divHistoryItem = document.createElement('div');
+    let divHistoryItem = document.createElement('div');
     divHistoryItem.classList.add('div-history-list');
 
+    let dateSpan = document.createElement('span');
+    let today = new Date();
     switch (period) {
         case 0:
-            var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
             dateSpan.textContent = new Date().toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
@@ -615,32 +808,26 @@ function populateHistory(expenses, period) {
             periodText.innerHTML = "Today";
             break;
         case 1:
-            var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
-            var today = new Date();
-            var lastWeek = new Date(today.setDate(today.getDate() - 6));
+            let lastWeek = new Date(today.setDate(today.getDate() - 6));
             dateSpan.textContent = lastWeek.toLocaleDateString() + " - " + new Date().toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
 
             periodText.innerHTML = "This week";
             break;
         case 2:
-            var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
-            var today = new Date();
-            var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            let lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
             dateSpan.textContent = firstDayOfMonth.toLocaleDateString() + " - " + lastDayOfMonth.toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
 
             periodText.innerHTML = "This month";
             break;
         case 3:
-            var dateSpan = document.createElement('span');
             dateSpan.classList.add('history-period');
-            var today = new Date();
-            var firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-            var lastDayOfYear = new Date(today.getFullYear(), 11, 31);
+            let firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+            let lastDayOfYear = new Date(today.getFullYear(), 11, 31);
             dateSpan.textContent = firstDayOfYear.toLocaleDateString() + " - " + lastDayOfYear.toLocaleDateString();
             divHistoryItem.appendChild(dateSpan);
 
@@ -654,13 +841,13 @@ function populateHistory(expenses, period) {
 
     expenses.forEach(function (expense) {
 
-        var divHistoryItem = document.createElement('div');
+        let divHistoryItem = document.createElement('div');
         divHistoryItem.classList.add('div-history-list');
 
-        var expenseSpan = document.createElement('span');
-        expenseSpan.textContent = expense.category + ': ' + (expense.sum).toFixed(2)+ ' ';
+        let expenseSpan = document.createElement('span');
+        expenseSpan.textContent = expense.category + ': ' + (expense.sum).toFixed(2) + ' ';
 
-        var currencySpan = document.createElement('span');
+        let currencySpan = document.createElement('span');
         currencySpan.classList.add('currency');
         currencySpan.textContent = currency;
 
@@ -673,15 +860,15 @@ function populateHistory(expenses, period) {
 
 function calculateStatistics(expenses) {
 
-    var categorySumVector = [];
-    for (var i = 0; i < numberOfCategories; i++) {
+    let categorySumVector = [];
+    for (let i = 0; i < numberOfCategories; i++) {
         categorySumVector.push(0);
     }
-    var total = 0;
+    let total = 0;
 
 
     expenses.forEach(function (expense) {
-        for (var i = 0; i < numberOfCategories; i++) {
+        for (let i = 0; i < numberOfCategories; i++) {
             if (expense.category === statisticsCategory[i].innerHTML) {
                 categorySumVector[i] += expense.sum;
             }
@@ -691,21 +878,21 @@ function calculateStatistics(expenses) {
 
     // Set total money spent and category spent
     totalMoneySpent.innerHTML = total.toFixed(2);
-    for (var i = 0; i < numberOfCategories; i++) {
+    for (let i = 0; i < numberOfCategories; i++) {
         statisticsAmount[i].innerHTML = categorySumVector[i].toFixed(2);
     }
 
     if (total === 0) {
-        for (var i = 0; i < numberOfCategories; i++) {
+        for (let i = 0; i < numberOfCategories; i++) {
             this.statisticsProgress[i].innerHTML = "0%";
             this.statisticsProgress[i].style.width = "0px";
         }
     }
     else {
 
-        var percentage = 0;
+        let percentage = 0;
 
-        for (var i = 0; i < numberOfCategories; i++) {
+        for (let i = 0; i < numberOfCategories; i++) {
             percentage = categorySumVector[i] / total * 100;
             statisticsProgress[i].innerHTML = Math.round(percentage) + "%";
             statisticsProgress[i].style.width = percentage.toFixed(2) / 100 * 500 + "px";
@@ -714,13 +901,12 @@ function calculateStatistics(expenses) {
 }
 
 
-
 /* Get expenses by period */
 
 function getTodayExpenses(expenses) {
 
-    var today = new Date();
-    var todayExpenses = expenses.filter(function (expense) {
+    let today = new Date();
+    let todayExpenses = expenses.filter(function (expense) {
         return expense.data.getDate() === today.getDate() &&
             expense.data.getMonth() === today.getMonth() &&
             expense.data.getFullYear() === today.getFullYear();
@@ -731,11 +917,11 @@ function getTodayExpenses(expenses) {
 
 function getWeekExpenses(expenses) {
 
-    var today = new Date();
-    var lastDayOfWeek = new Date(today.setDate(today.getDate()));
-    var firstDayOfWeek = new Date(today.setDate(lastDayOfWeek.getDate() - 6));
+    let today = new Date();
+    let lastDayOfWeek = new Date(today.setDate(today.getDate()));
+    let firstDayOfWeek = new Date(today.setDate(lastDayOfWeek.getDate() - 6));
 
-    var weekExpenses = expenses.filter(function (expense) {
+    let weekExpenses = expenses.filter(function (expense) {
         return expense.data >= firstDayOfWeek && expense.data <= lastDayOfWeek;
     });
 
@@ -745,11 +931,11 @@ function getWeekExpenses(expenses) {
 
 
 function getMonthExpenses(expenses) {
-    var today = new Date();
-    var firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    var lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    let today = new Date();
+    let firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    let lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
-    var monthExpenses = expenses.filter(function (expense) {
+    let monthExpenses = expenses.filter(function (expense) {
         return expense.data >= firstDayOfMonth && expense.data <= lastDayOfMonth;
     });
 
@@ -757,11 +943,11 @@ function getMonthExpenses(expenses) {
 }
 
 function getYearExpenses(expenses) {
-    var today = new Date();
-    var firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-    var lastDayOfYear = new Date(today.getFullYear(), 11, 31);
+    let today = new Date();
+    let firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    let lastDayOfYear = new Date(today.getFullYear(), 11, 31);
 
-    var yearExpenses = expenses.filter(function (expense) {
+    let yearExpenses = expenses.filter(function (expense) {
         return expense.data >= firstDayOfYear && expense.data <= lastDayOfYear;
     });
 
