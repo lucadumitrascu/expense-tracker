@@ -1,120 +1,70 @@
-/* ------------------------------------------------------------------------------------ */
+// Constructors
 
-/* Default in memory data */
-
-/* ------------------------------------------------------------------------------------ */
-function User(name, expenses, budget) {
+function User(id, name, expenses, budget) {
+    this.id = id;
     this.name = name;
     this.expenses = expenses;
     this.budget = budget;
 }
 
-function Expense(category, sum, data) {
+function Expense(category, sum, date) {
     this.category = category;
     this.sum = sum;
-    this.data = data;
+    this.date = date;
 }
 
-let xmlString = `<?xml version="1.0" encoding="UTF-8"?>
-<user>
-    <name>Luca</name>
-    <budget>300</budget>
-    <expenses>
-        <expense>
-            <category>Food</category>
-            <sum>50</sum>
-            <date>2024-03-29</date>
-        </expense>
-        <expense>
-            <category>Gym</category>
-            <sum>80</sum>
-            <date>2024-03-29</date>
-        </expense>
-        <expense>
-            <category>Food</category>
-            <sum>60</sum>
-            <date>2024-03-22</date>
-        </expense>
-        <expense>
-            <category>Gym</category>
-            <sum>90</sum>
-            <date>2024-03-23</date>
-        </expense>
-        <expense>
-            <category>Car</category>
-            <sum>120</sum>
-            <date>2024-03-25</date>
-        </expense>
-        <expense>
-            <category>Car</category>
-            <sum>110</sum>
-            <date>2024-03-27</date>
-        </expense>
-        <expense>
-            <category>Food</category>
-            <sum>55</sum>
-            <date>2024-03-12</date>
-        </expense>
-        <expense>
-            <category>Gym</category>
-            <sum>85</sum>
-            <date>2024-03-10</date>
-        </expense>
-        <expense>
-            <category>Car</category>
-            <sum>125</sum>
-            <date>2024-03-18</date>
-        </expense>
-        <expense>
-            <category>Food</category>
-            <sum>40</sum>
-            <date>2024-02-25</date>
-        </expense>
-        <expense>
-            <category>Gym</category>
-            <sum>70</sum>
-            <date>2024-02-19</date>
-        </expense>
-        <expense>
-            <category>Car</category>
-            <sum>100</sum>
-            <date>2024-02-01</date>
-        </expense>
-        <expense>
-            <category>House</category>
-            <sum>150</sum>
-            <date>2024-02-15</date>
-        </expense>
-        <expense>
-            <category>Gym</category>
-            <sum>200</sum>
-            <date>2024-02-20</date>
-        </expense>
-        <expense>
-            <category>Entertainment</category>
-            <sum>180</sum>
-            <date>2024-02-29</date>
-        </expense>
-    </expenses>
-</user>
-`;
 
+/* ------------------------------------------------------------------------------------ */
 
-const xmlDoc = new DOMParser().parseFromString(xmlString, "text/xml");
-let userName = xmlDoc.querySelector('name').textContent;
-let userBudget = parseFloat(xmlDoc.querySelector('budget').textContent);
+/* Fetch user data*/
 
-let user = new User(userName, [], userBudget);
+/* ------------------------------------------------------------------------------------ */
 
-let expenseNodes = xmlDoc.querySelectorAll('expense');
-expenseNodes.forEach(function (expenseNode) {
-    let category = expenseNode.querySelector('category').textContent;
-    let sum = parseFloat(expenseNode.querySelector('sum').textContent);
-    let date = new Date(expenseNode.querySelector('date').textContent);
-    let expense = new Expense(category, sum, date);
-    user.expenses.push(expense);
+// Data from login/register
+const email = localStorage.getItem("userEmail");
+console.log("userEmail:", email);
+let userDataFetched = false;
+
+// Fetch user data
+fetch(`http://localhost:8080/authentication/getUserDetails?email=${email}`, {
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json"
+    }
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error("Failed to fetch user details");
+    }
+    return response.json();
+})
+.then(userData => {
+    let user = new User(userData.id, userData.username, [], userData.budget);
+    let expenses = userData.expenses.map(expenseData => {
+        return new Expense(expenseData.category, expenseData.sum, expenseData.date.substring(0, 10));
+    });
+    user.expenses = expenses;
+    localStorage.setItem("user", JSON.stringify(user));
+    console.log("User details:", user);
+    localStorage.setItem("userDataFetched", userDataFetched=true);
+})
+.catch(error => {
+    console.error("Error fetching user details:", error);
 });
 
+
+
+userDataFetched = localStorage.getItem("userDataFetched");
+let user = new User();
+user = localStorage.getItem("user");
+user = JSON.parse(user);
+
+let expenses = [];
+expenses = user.expenses;
+
+if(userDataFetched){
+console.log(expenses[0].date);    
+console.log(userDataFetched); 
 let currency = "RON";
 
 let spanUsername = document.getElementById("span-username");
@@ -174,7 +124,7 @@ buttonHome.addEventListener("click", function () {
 
 
 let buttonChangeName = document.getElementById('button-change-name');
-//spanusername
+//spanUsername
 let buttonChangeNameClicked = false;
 let oldName;
 buttonChangeName.addEventListener("click", function () {
@@ -511,7 +461,7 @@ function createDivAddNewCategory() {
 }
 
 
-/* Return to home page and create a new category */
+/* Return to home and create a new category */
 
 formAddNewCategory.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -669,7 +619,7 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
 });
 
 function setNewExpenseToList(amount, category) {
-    let newExpense = new Expense(category, parseFloat(amount), new Date());
+    let newExpense = new Expense(category, parseFloat(amount), new Date().toISOString().split('T')[0]);
     user.expenses.push(newExpense);
 }
 
@@ -727,7 +677,7 @@ buttonDay.addEventListener("click", function () {
         monthClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "Today";
-        let todayExpenses = getTodayExpenses(user.expenses);
+        let todayExpenses = getTodayExpenses(expenses);
         populateHistory(todayExpenses, 0);
         calculateStatistics(todayExpenses);
     }
@@ -744,7 +694,7 @@ buttonWeek.addEventListener("click", function () {
         monthClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "This Week";
-        let weekExpenses = getWeekExpenses(user.expenses);
+        let weekExpenses = getWeekExpenses(expenses);
         populateHistory(weekExpenses, 1);
         calculateStatistics(weekExpenses);
     }
@@ -761,9 +711,11 @@ buttonMonth.addEventListener("click", function () {
         weekClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "This Month";
-        let monthExpenses = getMonthExpenses(user.expenses);
+        let monthExpenses = getMonthExpenses(expenses);
+        console.log(monthExpenses);
         populateHistory(monthExpenses, 2);
         calculateStatistics(monthExpenses);
+       
     }
 });
 
@@ -778,7 +730,7 @@ buttonYear.addEventListener("click", function () {
         weekClicked = false;
         monthClicked = false;
         spanPeriodStatistics.innerHTML = "This Year";
-        let yearExpenses = getYearExpenses(user.expenses);
+        let yearExpenses = getYearExpenses(expenses);
         populateHistory(yearExpenses, 3);
         calculateStatistics(yearExpenses);
     }
@@ -839,7 +791,7 @@ function populateHistory(expenses, period) {
 
     divHistoryList.appendChild(divHistoryItem);
 
-    expenses.forEach(function (expense) {
+    expenses.reverse().forEach(function (expense) {
 
         let divHistoryItem = document.createElement('div');
         divHistoryItem.classList.add('div-history-list');
@@ -871,6 +823,7 @@ function calculateStatistics(expenses) {
         for (let i = 0; i < numberOfCategories; i++) {
             if (expense.category === statisticsCategory[i].innerHTML) {
                 categorySumVector[i] += expense.sum;
+             
             }
         }
         total += expense.sum;
@@ -884,8 +837,8 @@ function calculateStatistics(expenses) {
 
     if (total === 0) {
         for (let i = 0; i < numberOfCategories; i++) {
-            this.statisticsProgress[i].innerHTML = "0%";
-            this.statisticsProgress[i].style.width = "0px";
+            statisticsProgress[i].innerHTML = "0%";
+            statisticsProgress[i].style.width = "0px";
         }
     }
     else {
@@ -904,31 +857,29 @@ function calculateStatistics(expenses) {
 /* Get expenses by period */
 
 function getTodayExpenses(expenses) {
-
     let today = new Date();
     let todayExpenses = expenses.filter(function (expense) {
-        return expense.data.getDate() === today.getDate() &&
-            expense.data.getMonth() === today.getMonth() &&
-            expense.data.getFullYear() === today.getFullYear();
+        let expenseDate = new Date(expense.date);
+        return expenseDate.getDate() === today.getDate() &&
+            expenseDate.getMonth() === today.getMonth() &&
+            expenseDate.getFullYear() === today.getFullYear();
     });
 
     return todayExpenses;
 }
 
 function getWeekExpenses(expenses) {
-
     let today = new Date();
     let lastDayOfWeek = new Date(today.setDate(today.getDate()));
     let firstDayOfWeek = new Date(today.setDate(lastDayOfWeek.getDate() - 6));
 
     let weekExpenses = expenses.filter(function (expense) {
-        return expense.data >= firstDayOfWeek && expense.data <= lastDayOfWeek;
+        let expenseDate = new Date(expense.date);
+        return expenseDate >= firstDayOfWeek && expenseDate <= lastDayOfWeek;
     });
-
 
     return weekExpenses;
 }
-
 
 function getMonthExpenses(expenses) {
     let today = new Date();
@@ -936,7 +887,8 @@ function getMonthExpenses(expenses) {
     let lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
     let monthExpenses = expenses.filter(function (expense) {
-        return expense.data >= firstDayOfMonth && expense.data <= lastDayOfMonth;
+        let expenseDate = new Date(expense.date);
+        return expenseDate >= firstDayOfMonth && expenseDate <= lastDayOfMonth;
     });
 
     return monthExpenses;
@@ -948,8 +900,11 @@ function getYearExpenses(expenses) {
     let lastDayOfYear = new Date(today.getFullYear(), 11, 31);
 
     let yearExpenses = expenses.filter(function (expense) {
-        return expense.data >= firstDayOfYear && expense.data <= lastDayOfYear;
+        let expenseDate = new Date(expense.date);
+        return expenseDate >= firstDayOfYear && expenseDate <= lastDayOfYear;
     });
 
     return yearExpenses;
+}
+
 }

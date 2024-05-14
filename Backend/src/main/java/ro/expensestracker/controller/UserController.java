@@ -3,6 +3,7 @@ package ro.expensestracker.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,17 +27,20 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDto> register(@RequestBody UserDto userDto) {
+    public ResponseEntity<ResponseDto> register(@Valid @RequestBody UserDto userDto) {
         userService.register(userDto);
+        System.out.println("register");
         return new ResponseEntity<>(new ResponseDto("The account has been successfully created"), HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto> login(@RequestBody LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) {
-        userService.login(loginDto, request, response);
-        return new ResponseEntity<>(new ResponseDto("you have been successfully logged in"), HttpStatus.OK);
+    public ResponseEntity<ResponseDto> login(@Valid @RequestBody LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) {
+        return userService.login(loginDto, request, response);
     }
-
+    @GetMapping("/getUserDetails")
+    public ResponseEntity<UserDto> getUserInfo(@RequestParam("email") String email) {
+        return userService.getUserDetails(email);
+    }
     @GetMapping("/checkAuthentication")
     public ResponseEntity<Boolean> checkAuthentication(HttpServletRequest request) {
         if (userService.isAuthenticated(request))

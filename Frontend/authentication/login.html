@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login-register-css.css">
+</head>
+<body>
+
+<form id="form-login" action="index.html" method="post">
+    <h2>Login</h2>
+    
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" requiremail>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+
+    <div class="div-buttons" id="div-buttons">
+        <input id="btn-submit-login" type="submit" value="Login">
+        <button id="btn-register" class="btn-register">Register</button>
+    </div>
+</form>
+
+<script src="login.js"></script>
+
+</body>
+</html>

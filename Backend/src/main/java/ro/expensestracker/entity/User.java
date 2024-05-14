@@ -2,6 +2,9 @@ package ro.expensestracker.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Entity
 @Table(name = "t_user")
 public class User {
@@ -15,11 +18,18 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String password;
+    @Column(precision = 10, scale = 2)
+    private BigDecimal budget;
+    @OneToMany(mappedBy = "user")
+    private List<Expense> expenses;
 
-    public User(String username, String email, String password) {
+    public User(Long id, String username, String email, String password, BigDecimal budget, List<Expense> expenses) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.budget = budget;
+        this.expenses = expenses;
     }
 
     public User() {
@@ -27,6 +37,10 @@ public class User {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -53,13 +67,19 @@ public class User {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public BigDecimal getBudget() {
+        return budget;
+    }
+
+    public void setBudget(BigDecimal budget) {
+        this.budget = budget;
+    }
+
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
     }
 }
