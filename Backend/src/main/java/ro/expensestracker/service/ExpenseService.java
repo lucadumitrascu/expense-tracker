@@ -1,6 +1,8 @@
 package ro.expensestracker.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,7 @@ public class ExpenseService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
-        Optional<User> currentUserOptional = userRepository.findByEmail(currentUsername);
+        Optional<User> currentUserOptional = userRepository.findByUsername(currentUsername);
         if (currentUserOptional.isPresent()) {
             User currentUser = currentUserOptional.get();
             expense.setUser(currentUser);
@@ -62,7 +64,7 @@ public class ExpenseService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
-        Optional<User> currentUserOptional = userRepository.findByEmail(currentUsername);
+        Optional<User> currentUserOptional = userRepository.findByUsername(currentUsername);
         if (currentUserOptional.isPresent()) {
             User currentUser = currentUserOptional.get();
             expense.setUser(currentUser);
@@ -72,7 +74,17 @@ public class ExpenseService {
         return expenseMapper.toExpenseDto(updatedExpense);
     }
 
-    public void deleteExpense(Long id) {
-        expenseRepository.deleteById(id);
+    public ResponseEntity<ExpenseDto> deleteExpense(Long id) {
+        ExpenseDto expenseDto = new ExpenseDto();
+        if (expenseRepository.findById(id).isPresent()) {
+            System.out.println("present");
+            expenseDto = expenseMapper.toExpenseDto(expenseRepository.findById(id).get());
+        }
+        if (expenseDto.getId() != 0) {
+            expenseRepository.deleteById(id);
+            return new ResponseEntity<>(expenseDto, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(expenseDto, HttpStatus.NOT_FOUND);
+        }
     }
 }
