@@ -43,7 +43,7 @@ public class ExpenseService {
         return expenseOptional.map(expenseMapper::toExpenseDto);
     }
 
-    public ExpenseDto createExpense(ExpenseDto expenseDto) {
+    public ResponseEntity<ExpenseDto> createExpense(ExpenseDto expenseDto) {
         Expense expense = ExpenseMapper.toExpense(expenseDto);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -52,15 +52,16 @@ public class ExpenseService {
         if (currentUserOptional.isPresent()) {
             User currentUser = currentUserOptional.get();
             expense.setUser(currentUser);
+            Expense savedExpense = expenseRepository.save(expense);
+            return new ResponseEntity<>(expenseMapper.toExpenseDto(savedExpense), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(expenseDto, HttpStatus.BAD_REQUEST);
         }
-
-        Expense savedExpense = expenseRepository.save(expense);
-        return expenseMapper.toExpenseDto(savedExpense);
     }
 
-    public ExpenseDto updateExpense(Long id, ExpenseDto expenseDto) {
+    public ResponseEntity<ExpenseDto> updateExpense(Long id, ExpenseDto expenseDto) {
+        expenseDto.setId(id);
         Expense expense = ExpenseMapper.toExpense(expenseDto);
-        expense.setId(id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
@@ -68,16 +69,15 @@ public class ExpenseService {
         if (currentUserOptional.isPresent()) {
             User currentUser = currentUserOptional.get();
             expense.setUser(currentUser);
+            return new ResponseEntity<>(expenseDto, HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(expenseDto, HttpStatus.NOT_FOUND);
         }
-
-        Expense updatedExpense = expenseRepository.save(expense);
-        return expenseMapper.toExpenseDto(updatedExpense);
     }
 
     public ResponseEntity<ExpenseDto> deleteExpense(Long id) {
         ExpenseDto expenseDto = new ExpenseDto();
         if (expenseRepository.findById(id).isPresent()) {
-            System.out.println("present");
             expenseDto = expenseMapper.toExpenseDto(expenseRepository.findById(id).get());
         }
         if (expenseDto.getId() != 0) {
