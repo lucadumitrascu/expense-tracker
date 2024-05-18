@@ -7,71 +7,40 @@ function User(id, name, expenses, budget) {
     this.budget = budget;
 }
 
-function Expense(category, sum, date) {
+function Expense(id, category, sum, date) {
+    this.id = id;
     this.category = category;
     this.sum = sum;
     this.date = date;
 }
-
-
 /* ------------------------------------------------------------------------------------ */
 
 /* Fetch user data*/
 
 /* ------------------------------------------------------------------------------------ */
+// TOKEN
+const token = localStorage.getItem("accessToken");
 
-// Data from login/register
-const email = localStorage.getItem("userEmail");
-console.log("userEmail:", email);
+// Global variables
 let userDataFetched = false;
-
-// Fetch user data
-fetch(`http://localhost:8080/authentication/getUserDetails?email=${email}`, {
-    method: "GET",
-    headers: {
-        "Content-Type": "application/json"
-    }
-})
-.then(response => {
-    if (!response.ok) {
-        throw new Error("Failed to fetch user details");
-    }
-    return response.json();
-})
-.then(userData => {
-    let user = new User(userData.id, userData.username, [], userData.budget);
-    let expenses = userData.expenses.map(expenseData => {
-        return new Expense(expenseData.category, expenseData.sum, expenseData.date.substring(0, 10));
-    });
-    user.expenses = expenses;
-    localStorage.setItem("user", JSON.stringify(user));
-    console.log("User details:", user);
-    localStorage.setItem("userDataFetched", userDataFetched=true);
-})
-.catch(error => {
-    console.error("Error fetching user details:", error);
-});
-
-
-
-userDataFetched = localStorage.getItem("userDataFetched");
-let user = new User();
-user = localStorage.getItem("user");
-user = JSON.parse(user);
-
-let expenses = [];
-expenses = user.expenses;
-
-if(userDataFetched){
-console.log(expenses[0].date);    
-console.log(userDataFetched); 
-let currency = "RON";
-
+let userData = null;
+let user;
 let spanUsername = document.getElementById("span-username");
-spanUsername.innerHTML = user.name;
-
 let spanBudgetValue = document.getElementById('span-budget-value');
-spanBudgetValue.innerHTML = user.budget;
+
+fetchUserData();
+userData = localStorage.getItem("userData");
+if (userData) {
+    user = new User();
+    x = true;
+    user = JSON.parse(userData);
+    if (user.expenses.length > 0) {
+        lastIdInExpenses = user.expenses[user.expenses.length - 1].id;
+    }
+}
+
+
+let currency = "RON";
 let numberOfCategories = 5;
 
 /* Currency */
@@ -93,7 +62,6 @@ let errorMessageSet = false;
 
 
 
-
 /* ------------------------------------------------------------------------------------ */
 
 /* Home button */
@@ -102,6 +70,8 @@ let errorMessageSet = false;
 
 let buttonHome = document.getElementById('button-home');
 buttonHome.addEventListener("click", function () {
+    dayClicked = false;
+    buttonDay.click();
     divAddNewExpense.style.display = "block";
 
     formAddNewCategory.reset();
@@ -122,7 +92,7 @@ buttonHome.addEventListener("click", function () {
 
 /* ------------------------------------------------------------------------------------ */
 
-
+/*
 let buttonChangeName = document.getElementById('button-change-name');
 //spanUsername
 let buttonChangeNameClicked = false;
@@ -178,7 +148,7 @@ buttonChangeName.addEventListener("click", function () {
 })
 
 
-
+*/
 
 
 
@@ -227,7 +197,6 @@ buttonCurrencies[0].addEventListener("click", function () {
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
                 expense.sum = expense.sum * 4.59892;
-
             });
         }
         if (oldCurrency === "€") {
@@ -380,6 +349,7 @@ buttonChangeBudget.addEventListener("click", function () {
         }
         else {
             spanBudgetValue.innerText = newBudgetValue;
+            saveBudgetValueInDatabase(newBudgetValue);
         }
 
         // Append normal styles
@@ -578,10 +548,6 @@ function createCategoryExistsErrorMessage() {
 /* Add new expense functionality */
 
 /* ------------------------------------------------------------------------------------ */
-
-let buttonAddNewExpense = document.getElementById('button-add-new-expense');
-let formInputAmount = document.getElementById('form-input-amount');
-let formInputCategory = document.getElementById('form-input-category');
 let formExpense = document.getElementById('form-expense');
 
 // Span Insufficient Funds 
@@ -611,17 +577,30 @@ document.getElementById("form-expense").addEventListener("submit", function (eve
         if (spanInsufficientFunds != undefined) {
             spanInsufficientFunds.remove();
         }
-        spanBudgetValue.innerHTML = budgetValue.toFixed(2);
+        saveBudgetValueInDatabase(budgetValue);
+        user.budget = budgetValue;
+        spanBudgetValue.innerText = user.budget.toFixed(2);
+
         dayClicked = false;
         buttonDay.click();
         document.getElementById("form-expense").reset();
     }
 });
 
-function setNewExpenseToList(amount, category) {
-    let newExpense = new Expense(category, parseFloat(amount), new Date().toISOString().split('T')[0]);
-    user.expenses.push(newExpense);
+async function setNewExpenseToList(amount, category) {
+    try {
+        let newExpense = new Expense(0, category, parseFloat(amount), new Date().toISOString().split('T')[0]);
+        const responseData = await saveExpenseInDatabase(newExpense, amount);
+        const newExpenseFromServer = new Expense(responseData.id, category, parseFloat(amount), new Date().toISOString().split('T')[0]);
+        user.expenses.push(newExpenseFromServer);
+        console.log('New expense added:', newExpenseFromServer);
+        dayClicked = false;
+        buttonDay.click();
+    } catch (error) {
+        console.error('Error adding new expense:', error);
+    }
 }
+
 
 
 
@@ -677,7 +656,7 @@ buttonDay.addEventListener("click", function () {
         monthClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "Today";
-        let todayExpenses = getTodayExpenses(expenses);
+        let todayExpenses = getTodayExpenses(user.expenses);
         populateHistory(todayExpenses, 0);
         calculateStatistics(todayExpenses);
     }
@@ -694,7 +673,7 @@ buttonWeek.addEventListener("click", function () {
         monthClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "This Week";
-        let weekExpenses = getWeekExpenses(expenses);
+        let weekExpenses = getWeekExpenses(user.expenses);
         populateHistory(weekExpenses, 1);
         calculateStatistics(weekExpenses);
     }
@@ -711,11 +690,10 @@ buttonMonth.addEventListener("click", function () {
         weekClicked = false;
         yearClicked = false;
         spanPeriodStatistics.innerHTML = "This Month";
-        let monthExpenses = getMonthExpenses(expenses);
-        console.log(monthExpenses);
+        let monthExpenses = getMonthExpenses(user.expenses);
         populateHistory(monthExpenses, 2);
         calculateStatistics(monthExpenses);
-       
+
     }
 });
 
@@ -730,7 +708,7 @@ buttonYear.addEventListener("click", function () {
         weekClicked = false;
         monthClicked = false;
         spanPeriodStatistics.innerHTML = "This Year";
-        let yearExpenses = getYearExpenses(expenses);
+        let yearExpenses = getYearExpenses(user.expenses);
         populateHistory(yearExpenses, 3);
         calculateStatistics(yearExpenses);
     }
@@ -792,21 +770,32 @@ function populateHistory(expenses, period) {
     divHistoryList.appendChild(divHistoryItem);
 
     expenses.reverse().forEach(function (expense) {
-
         let divHistoryItem = document.createElement('div');
         divHistoryItem.classList.add('div-history-list');
 
         let expenseSpan = document.createElement('span');
         expenseSpan.textContent = expense.category + ': ' + (expense.sum).toFixed(2) + ' ';
+        expenseSpan.classList.add('hover-red');
 
         let currencySpan = document.createElement('span');
         currencySpan.classList.add('currency');
         currencySpan.textContent = currency;
-
         expenseSpan.appendChild(currencySpan);
-        divHistoryItem.appendChild(expenseSpan);
 
+
+        divHistoryItem.appendChild(expenseSpan);
         divHistoryList.appendChild(divHistoryItem);
+        expenseSpan.addEventListener('click', async function () {
+            try {
+                await deleteExpenseFromDatabase(expense.id);
+                user.expenses = user.expenses.filter(exp => exp.id !== expense.id);
+                dayClicked = false;
+                buttonDay.click();
+            } catch (error) {
+                console.error('Error deleting expense:', error);
+            }
+        });
+
     });
 }
 
@@ -823,7 +812,7 @@ function calculateStatistics(expenses) {
         for (let i = 0; i < numberOfCategories; i++) {
             if (expense.category === statisticsCategory[i].innerHTML) {
                 categorySumVector[i] += expense.sum;
-             
+
             }
         }
         total += expense.sum;
@@ -853,20 +842,21 @@ function calculateStatistics(expenses) {
     }
 }
 
-
 /* Get expenses by period */
 
 function getTodayExpenses(expenses) {
     let today = new Date();
+    today.setDate(today.getDate());
+    let formattedToday = today.toISOString().split('T')[0];
+
     let todayExpenses = expenses.filter(function (expense) {
-        let expenseDate = new Date(expense.date);
-        return expenseDate.getDate() === today.getDate() &&
-            expenseDate.getMonth() === today.getMonth() &&
-            expenseDate.getFullYear() === today.getFullYear();
+        return expense.date === formattedToday;
     });
 
     return todayExpenses;
 }
+
+
 
 function getWeekExpenses(expenses) {
     let today = new Date();
@@ -907,4 +897,125 @@ function getYearExpenses(expenses) {
     return yearExpenses;
 }
 
+
+
+
+async function fetchUserData() {
+    try {
+        const response = await fetch(`http://localhost:8080/users/details`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch user details");
+        }
+
+        const userData = await response.json();
+
+        userData.expenses.forEach(expenseData => {
+            let expenseDate = new Date(expenseData.date);
+            expenseDate.setDate(expenseDate.getDate() + 1);
+            expenseData.date = expenseDate.toISOString();
+        });
+
+        let user = new User(userData.id, userData.username, [], userData.budget);
+        let expenses = userData.expenses.map(expenseData => {
+            return new Expense(expenseData.id, expenseData.category, expenseData.sum, expenseData.date.substring(0, 10));
+        });
+
+        user.expenses = expenses;
+
+        localStorage.setItem("userData", JSON.stringify(user));
+        console.log("User details:", user);
+
+        spanUsername.innerHTML = user.name;
+        spanBudgetValue.innerHTML = user.budget;
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        throw error;
+    }
+}
+
+async function saveBudgetValueInDatabase(budget) {
+    try {
+        const url = 'http://localhost:8080/users/budget';
+        const response = await fetch(url, {
+            method: 'PUT',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(budget)
+        });
+
+        if (!response.ok) {
+            throw new Error('Network error: ' + response.status);
+        }
+
+        const data = await response.json();
+        console.log('Budget successfully updated:', data);
+    } catch (error) {
+        console.error('Error updating budget:', error);
+        throw error;
+    }
+}
+
+async function saveExpenseInDatabase(newExpense, amount) {
+    try {
+        const url = 'http://localhost:8080/expenses';
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ category: newExpense.category, sum: parseFloat(amount), date: newExpense.date, user_id: user.id })
+        });
+
+        if (!response.ok) {
+            throw new Error('Network error: ' + response.status);
+        }
+
+        const data = await response.json();
+
+        if (data && data.id) {
+          return data;
+        } else {
+            console.error('Error: Invalid data returned from server');
+        }
+    } catch (error) {
+        console.error('Error adding user:', error);
+        throw error;
+    }
+}
+
+
+async function deleteExpenseFromDatabase(id) {
+    const url = `http://localhost:8080/expenses/${id}`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Network error: ' + response.status);
+        }
+        console.log('Expense was successfully deleted');
+        return response;
+    } catch (error) {
+        console.error('Error deleting expense:', error);
+        throw error;
+    }
 }

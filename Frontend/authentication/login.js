@@ -1,11 +1,11 @@
 let submitLoginForm = document.getElementById("form-login");
-let email;
+let username;
 
 submitLoginForm.addEventListener("submit", async function(event) {
     // Prevent form from submitting normally
     event.preventDefault();
 
-    email = document.getElementById("email").value;
+    username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
     // Make POST request
@@ -18,13 +18,13 @@ submitLoginForm.addEventListener("submit", async function(event) {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email: email, password: password }),
+                body: JSON.stringify({ username: username, password: password }),
             }
         );
         if (response.status === 200) {
-            // Send user email in index.html
-            localStorage.setItem("userEmail", email);
-            // Redirect to success page if authentication is successful
+            // Send user username in index.html
+            const responseData = await response.json();
+            localStorage.setItem("accessToken", responseData.accessToken);
             window.location.href = "../index.html"; 
         } else {
             const errorData = await response.json();

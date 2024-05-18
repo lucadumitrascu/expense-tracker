@@ -24,7 +24,7 @@ submitRegisterForm.addEventListener("submit", async function(event) {
            // Send user email in index.html
            localStorage.setItem("userEmail", email);
            // Redirect to success page if authentication is successful
-           window.location.href = "../index.html"; 
+           window.location.href = "login.html"; 
         } else {
             showError();
         }
@@ -45,7 +45,7 @@ let divButtons = document.getElementById("div-buttons");
 function showError() {
     spanError.classList.add('span-error'); 
     spanError.innerText = "Something went wrong!"; 
-    submitLoginForm.insertBefore(spanError, divButtons); 
+    submitRegisterForm.insertBefore(spanError, divButtons); 
     setTimeout(function () {
         spanError.remove(); 
     }, 5000);

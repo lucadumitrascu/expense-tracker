@@ -302,6 +302,10 @@ footer {
     margin-left: 5px;
 }
 
+.hover-red:hover {
+    background-color: #ff9999; 
+    cursor: pointer;
+}
 
 .history-period {
     text-align: center;
