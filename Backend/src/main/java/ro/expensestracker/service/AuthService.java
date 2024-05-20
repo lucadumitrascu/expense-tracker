@@ -48,6 +48,7 @@ public class AuthService {
         if (user.getBudget() == null) {
             user.setBudget(BigDecimal.valueOf(300.00));
         }
+        user.setCurrency("RON");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         System.out.println("Registration successful!");
         userRepository.save(user);

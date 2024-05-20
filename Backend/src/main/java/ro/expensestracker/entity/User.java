@@ -20,15 +20,18 @@ public class User {
     private String password;
     @Column(precision = 10, scale = 2)
     private BigDecimal budget;
+    @Column
+    private String currency;
     @OneToMany(mappedBy = "user")
     private List<Expense> expenses;
 
-    public User(Long id, String username, String email, String password, BigDecimal budget, List<Expense> expenses) {
+    public User(Long id, String username, String email, String password, BigDecimal budget, String currency, List<Expense> expenses) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.budget = budget;
+        this.currency = currency;
         this.expenses = expenses;
     }
 
@@ -73,6 +76,14 @@ public class User {
 
     public void setBudget(BigDecimal budget) {
         this.budget = budget;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public List<Expense> getExpenses() {

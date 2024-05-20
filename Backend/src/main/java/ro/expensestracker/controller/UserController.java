@@ -30,4 +30,10 @@ public class UserController {
     public ResponseEntity<BigDecimal> updateBudget(@RequestBody BigDecimal budget) {
         return userService.updateUserBudget(budget);
     }
+
+    @PutMapping("/currency")
+    public ResponseEntity<String> updateCurrency(@RequestBody String currency) {
+        return userService.updateUserCurrency(currency);
+    }
+
 }

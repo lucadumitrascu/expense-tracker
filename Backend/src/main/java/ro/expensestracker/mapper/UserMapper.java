@@ -13,6 +13,7 @@ public class UserMapper {
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
         user.setBudget(userDto.getBudget());
+        user.setCurrency(userDto.getCurrency());
         user.setExpenses(userDto.getExpenses());
         return user;
     }
@@ -24,6 +25,7 @@ public class UserMapper {
         userDto.setUsername(user.getUsername());
         userDto.setPassword(user.getPassword());
         userDto.setBudget(user.getBudget());
+        userDto.setCurrency(user.getCurrency());
         userDto.setExpenses(user.getExpenses());
         return userDto;
     }

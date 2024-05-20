@@ -18,14 +18,16 @@ public class UserDto {
     @NotEmpty(message = "You have to enter a password!")
     private String password;
     private BigDecimal budget;
+    private String currency;
     private List<Expense> expenses;
 
-    public UserDto(Long id, String username, String email, String password, BigDecimal budget, List<Expense> expenses) {
+    public UserDto(Long id, String username, String email, String password, BigDecimal budget, String currency, List<Expense> expenses) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.budget = budget;
+        this.currency = currency;
         this.expenses = expenses;
     }
 
@@ -70,6 +72,14 @@ public class UserDto {
 
     public void setBudget(BigDecimal budget) {
         this.budget = budget;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public List<Expense> getExpenses() {

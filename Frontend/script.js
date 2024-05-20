@@ -1,10 +1,11 @@
 // Constructors
 
-function User(id, name, expenses, budget) {
+function User(id, name, expenses, budget, currency) {
     this.id = id;
     this.name = name;
     this.expenses = expenses;
     this.budget = budget;
+    this.currency = currency;
 }
 
 function Expense(id, category, sum, date) {
@@ -20,32 +21,34 @@ function Expense(id, category, sum, date) {
 /* ------------------------------------------------------------------------------------ */
 // TOKEN
 const token = localStorage.getItem("accessToken");
+console.log(token);
 
 // Global variables
-let userDataFetched = false;
 let userData = null;
 let user;
 let spanUsername = document.getElementById("span-username");
 let spanBudgetValue = document.getElementById('span-budget-value');
+let currency;
 
 fetchUserData();
 userData = localStorage.getItem("userData");
-if (userData) {
+
+if (userData != null) {
     user = new User();
-    x = true;
     user = JSON.parse(userData);
-    if (user.expenses.length > 0) {
-        lastIdInExpenses = user.expenses[user.expenses.length - 1].id;
-    }
+    spanUsername.innerHTML = user.name;
+    spanBudgetValue.innerHTML = user.budget;
+    currency = user.currency;
 }
 
 
-let currency = "RON";
 let numberOfCategories = 5;
 
 /* Currency */
 let currencyHTML = document.querySelectorAll('.currency');
-
+currencyHTML.forEach(function (currency1) {
+    currency1.innerText = currency;
+});
 
 /* Statistics and categories */
 let statisticsProgress = document.querySelectorAll('.progress');
@@ -210,9 +213,12 @@ buttonCurrencies[0].addEventListener("click", function () {
         dayClicked = false;
         buttonDay.click();
         oldCurrency = currency;
-        buttonChangeCurrency.style = "";
-        buttonChangeCurrency.classList.add('vertical-navbar-button');
+        user.currency = currency;
+        user.budget = spanBudgetValue.innerText;
+        saveCurrencyToDatabase(user.currency);
     }
+    buttonChangeCurrency.style = "";
+    buttonChangeCurrency.classList.add('vertical-navbar-button');
 });
 
 buttonCurrencies[1].addEventListener("click", function () {
@@ -242,9 +248,12 @@ buttonCurrencies[1].addEventListener("click", function () {
         dayClicked = false;
         buttonDay.click();
         oldCurrency = currency;
-        buttonChangeCurrency.style = "";
-        buttonChangeCurrency.classList.add('vertical-navbar-button');
+        user.currency = currency;
+        user.budget = spanBudgetValue.innerText;
+        saveCurrencyToDatabase(user.currency);
     }
+    buttonChangeCurrency.style = "";
+    buttonChangeCurrency.classList.add('vertical-navbar-button');
 });
 
 buttonCurrencies[2].addEventListener("click", function () {
@@ -274,9 +283,13 @@ buttonCurrencies[2].addEventListener("click", function () {
         dayClicked = false;
         buttonDay.click();
         oldCurrency = currency;
-        buttonChangeCurrency.style = "";
-        buttonChangeCurrency.classList.add('vertical-navbar-button');
+        user.currency = currency;
+        user.budget = spanBudgetValue.innerText;
+        saveCurrencyToDatabase(user.currency);
+
     }
+    buttonChangeCurrency.style = "";
+    buttonChangeCurrency.classList.add('vertical-navbar-button');
 });
 
 
@@ -485,7 +498,6 @@ function createNewCategory(value) {
     spanCurrency.classList.add('currency');
     divNewCategoryInStatistics.appendChild(spanCurrency);
     divNewCategoryInStatistics.appendChild(document.createTextNode(' '));
-
 
     spanCurrency.innerText = currency;
 
@@ -923,18 +935,14 @@ async function fetchUserData() {
             expenseData.date = expenseDate.toISOString();
         });
 
-        let user = new User(userData.id, userData.username, [], userData.budget);
+        let user = new User(userData.id, userData.username, [], userData.budget, userData.currency);
         let expenses = userData.expenses.map(expenseData => {
             return new Expense(expenseData.id, expenseData.category, expenseData.sum, expenseData.date.substring(0, 10));
         });
-
         user.expenses = expenses;
-
         localStorage.setItem("userData", JSON.stringify(user));
         console.log("User details:", user);
 
-        spanUsername.innerHTML = user.name;
-        spanBudgetValue.innerHTML = user.budget;
     } catch (error) {
         console.error("Error fetching user data:", error);
         throw error;
@@ -986,7 +994,7 @@ async function saveExpenseInDatabase(newExpense, amount) {
         const data = await response.json();
 
         if (data && data.id) {
-          return data;
+            return data;
         } else {
             console.error('Error: Invalid data returned from server');
         }
@@ -1016,6 +1024,35 @@ async function deleteExpenseFromDatabase(id) {
         return response;
     } catch (error) {
         console.error('Error deleting expense:', error);
+        throw error;
+    }
+}
+
+
+
+
+async function saveCurrencyToDatabase(currency) {
+    try {
+        const url = 'http://localhost:8080/users/currency';
+        const response = await fetch(url, {
+            method: 'PUT',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "text/plain"
+            },
+            body: JSON.stringify(currency)
+        });
+
+        if (response.ok) {
+            saveBudgetValueInDatabase(user.budget);
+            const data = await response.json();
+            console.log('Currency successfully updated:', data);
+        } else {
+            console.error('Failed to update currency:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error updating currency:', error);
         throw error;
     }
 }

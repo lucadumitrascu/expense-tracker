@@ -26,11 +26,8 @@ public class UserService {
 
     // Get user details for current authenticated user
     public ResponseEntity<UserDto> getUserDetails() {
-        UserDto userDto = new UserDto();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> userOptional = userRepository.findByUsername(authentication.getName());
-        if (userOptional.isPresent()) {
-            userDto = UserMapper.toUserDto(userOptional.get());
+        UserDto userDto = UserMapper.toUserDto(getAuthenticatedUser());
+        if (userDto != null) {
             return new ResponseEntity<>(userDto, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(userDto, HttpStatus.NOT_FOUND);
@@ -38,16 +35,30 @@ public class UserService {
     }
 
     public ResponseEntity<BigDecimal> updateUserBudget(BigDecimal budget) {
-        User user;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> userOptional = userRepository.findByUsername(authentication.getName());
-        if (userOptional.isPresent()) {
-            user = userOptional.get();
+        User user = getAuthenticatedUser();
+        if (user != null) {
             user.setBudget(budget);
             userRepository.save(user);
             return new ResponseEntity<>(budget, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(budget, HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<String> updateUserCurrency(String currency) {
+        User user = getAuthenticatedUser();
+        if (user != null) {
+            user.setCurrency(currency.replace("\"", ""));
+            userRepository.save(user);
+            return new ResponseEntity<>(currency, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(currency, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> userOptional = userRepository.findByUsername(authentication.getName());
+        return userOptional.orElse(null);
     }
 }

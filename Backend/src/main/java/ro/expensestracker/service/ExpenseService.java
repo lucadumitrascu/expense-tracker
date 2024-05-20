@@ -70,7 +70,7 @@ public class ExpenseService {
             User currentUser = currentUserOptional.get();
             expense.setUser(currentUser);
             return new ResponseEntity<>(expenseDto, HttpStatus.OK);
-        }else {
+        } else {
             return new ResponseEntity<>(expenseDto, HttpStatus.NOT_FOUND);
         }
     }
@@ -86,5 +86,19 @@ public class ExpenseService {
         } else {
             return new ResponseEntity<>(expenseDto, HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<String> updateAllExpenses(List<ExpenseDto> expenses) {
+        Expense expense = new Expense();
+        for (ExpenseDto expenseDto : expenses) {
+            Optional<Expense> expenseOpt = expenseRepository.findById(expenseDto.getId());
+            if (expenseOpt.isPresent()) {
+                expense = expenseOpt.get();
+                expenseRepository.save(expense);
+            } else {
+                System.out.println("Invalid expense!");
+            }
+        }
+        return new ResponseEntity<String>("All expenses updated successfully!", HttpStatus.OK);
     }
 }
