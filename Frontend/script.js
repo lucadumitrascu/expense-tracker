@@ -431,8 +431,8 @@ formAddNewCategory.addEventListener("submit", function (event) {
 
         createNewCategory(inputNewCategory.value);
 
+        saveCategoryInDatabase(inputNewCategory.value);
         buttonAddCategoryClicked = false;
-
         formAddNewCategory.reset();
     }
 });
@@ -962,7 +962,7 @@ async function saveExpenseInDatabase(newExpense, amount) {
             console.error('Error: Invalid data returned from server');
         }
     } catch (error) {
-        console.error('Error adding user:', error);
+        console.error('Error adding expense:', error);
         throw error;
     }
 }
@@ -1010,12 +1010,37 @@ async function saveCurrencyToDatabase(currency) {
         if (response.ok) {
             saveBudgetValueInDatabase(user.budget);
             const data = await response.json();
-            console.log('Currency successfully updated:', data);
+            console.log('Currency was successfully updated:', data);
         } else {
             console.error('Failed to update currency:', response.statusText);
         }
     } catch (error) {
         console.error('Error updating currency:', error);
+        throw error;
+    }
+}
+
+async function saveCategoryInDatabase(category) {
+    try {
+        const url = 'http://localhost:8080/api/categories';
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({name:category,userId:user.id})
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Category was successfully saved', data);
+        } else {
+            console.error('Failed to save category:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error saving category:', error);
         throw error;
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ro.expensestracker.dto.CategoryDto;
 import ro.expensestracker.service.CategoryService;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -17,11 +16,6 @@ public class CategoryController {
     @Autowired
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        return categoryService.getAllCategories();
     }
 
     @PostMapping
