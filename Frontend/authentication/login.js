@@ -11,7 +11,7 @@ submitLoginForm.addEventListener("submit", async function(event) {
     // Make POST request
     try {
         const response = await fetch(
-            "http://localhost:8080/authentication/login",
+            "http://localhost:8080/api/authentication/login",
             {
                 credentials: "include",
                 method: "POST",
@@ -22,7 +22,6 @@ submitLoginForm.addEventListener("submit", async function(event) {
             }
         );
         if (response.status === 200) {
-            // Send user username in index.html
             const responseData = await response.json();
             localStorage.setItem("accessToken", responseData.accessToken);
             window.location.href = "../index.html"; 

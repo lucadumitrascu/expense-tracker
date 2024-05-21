@@ -10,7 +10,7 @@ submitRegisterForm.addEventListener("submit", async function(event) {
     // Make POST request
     try {
         const response = await fetch(
-            "http://localhost:8080/authentication/register",
+            "http://localhost:8080/api/authentication/register",
             {
                 method: "POST",
                 headers: {

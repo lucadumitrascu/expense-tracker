@@ -21,26 +21,25 @@ import java.util.stream.Collectors;
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
-    private final ExpenseMapper expenseMapper;
+
     private final UserRepository userRepository;
 
     @Autowired
-    public ExpenseService(ExpenseRepository expenseRepository, ExpenseMapper expenseMapper, UserRepository userRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, UserRepository userRepository) {
         this.expenseRepository = expenseRepository;
-        this.expenseMapper = expenseMapper;
         this.userRepository = userRepository;
     }
 
     public List<ExpenseDto> getAllExpenses() {
         List<Expense> expenses = expenseRepository.findAll();
         return expenses.stream()
-                .map(expenseMapper::toExpenseDto)
+                .map(ExpenseMapper::toExpenseDto)
                 .collect(Collectors.toList());
     }
 
     public Optional<ExpenseDto> getExpenseById(Long id) {
         Optional<Expense> expenseOptional = expenseRepository.findById(id);
-        return expenseOptional.map(expenseMapper::toExpenseDto);
+        return expenseOptional.map(ExpenseMapper::toExpenseDto);
     }
 
     public ResponseEntity<ExpenseDto> createExpense(ExpenseDto expenseDto) {
@@ -53,7 +52,7 @@ public class ExpenseService {
             User currentUser = currentUserOptional.get();
             expense.setUser(currentUser);
             Expense savedExpense = expenseRepository.save(expense);
-            return new ResponseEntity<>(expenseMapper.toExpenseDto(savedExpense), HttpStatus.CREATED);
+            return new ResponseEntity<>(ExpenseMapper.toExpenseDto(savedExpense), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(expenseDto, HttpStatus.BAD_REQUEST);
         }
@@ -78,7 +77,7 @@ public class ExpenseService {
     public ResponseEntity<ExpenseDto> deleteExpense(Long id) {
         ExpenseDto expenseDto = new ExpenseDto();
         if (expenseRepository.findById(id).isPresent()) {
-            expenseDto = expenseMapper.toExpenseDto(expenseRepository.findById(id).get());
+            expenseDto = ExpenseMapper.toExpenseDto(expenseRepository.findById(id).get());
         }
         if (expenseDto.getId() != 0) {
             expenseRepository.deleteById(id);

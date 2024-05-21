@@ -24,8 +24,10 @@ public class User {
     private String currency;
     @OneToMany(mappedBy = "user")
     private List<Expense> expenses;
+    @OneToMany(mappedBy = "user")
+    private List<Category> categories;
 
-    public User(Long id, String username, String email, String password, BigDecimal budget, String currency, List<Expense> expenses) {
+    public User(Long id, String username, String email, String password, BigDecimal budget, String currency, List<Expense> expenses, List<Category> categories) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -33,6 +35,7 @@ public class User {
         this.budget = budget;
         this.currency = currency;
         this.expenses = expenses;
+        this.categories = categories;
     }
 
     public User() {
@@ -92,5 +95,13 @@ public class User {
 
     public void setExpenses(List<Expense> expenses) {
         this.expenses = expenses;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

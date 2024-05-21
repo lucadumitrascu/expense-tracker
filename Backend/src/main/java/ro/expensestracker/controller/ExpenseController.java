@@ -9,7 +9,7 @@ import ro.expensestracker.service.ExpenseService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/expenses")
+@RequestMapping("/api/expenses")
 public class ExpenseController {
 
     private final ExpenseService expenseService;

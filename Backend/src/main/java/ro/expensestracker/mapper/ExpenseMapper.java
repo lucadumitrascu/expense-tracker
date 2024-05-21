@@ -7,7 +7,6 @@ import ro.expensestracker.entity.Expense;
 @Component
 public class ExpenseMapper {
 
-
     public static Expense toExpense(ExpenseDto expenseDto) {
         Expense expense = new Expense();
         expense.setId(expenseDto.getId());
@@ -18,7 +17,7 @@ public class ExpenseMapper {
         return expense;
     }
 
-    public ExpenseDto toExpenseDto(Expense expense) {
+    public static ExpenseDto toExpenseDto(Expense expense) {
         ExpenseDto expenseDto = new ExpenseDto();
         expenseDto.setId(expense.getId());
         expenseDto.setCategory(expense.getCategory());

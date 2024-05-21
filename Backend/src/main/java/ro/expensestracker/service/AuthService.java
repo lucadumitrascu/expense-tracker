@@ -1,7 +1,5 @@
 package ro.expensestracker.service;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,12 +11,16 @@ import org.springframework.stereotype.Service;
 import ro.expensestracker.dto.AuthResponseDto;
 import ro.expensestracker.dto.ResponseDto;
 import ro.expensestracker.dto.UserDto;
+import ro.expensestracker.entity.Category;
 import ro.expensestracker.entity.User;
 import ro.expensestracker.mapper.UserMapper;
+import ro.expensestracker.repository.CategoryRepository;
 import ro.expensestracker.repository.UserRepository;
 import ro.expensestracker.security.JwtTokenGenerator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -27,18 +29,19 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenGenerator jwtTokenGenerator;
+    private final CategoryRepository categoryRepository;
 
-    @Autowired
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
-                       JwtTokenGenerator jwtTokenGenerator) {
+                       JwtTokenGenerator jwtTokenGenerator,
+                       CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
+        this.categoryRepository = categoryRepository;
     }
-
 
     public ResponseEntity<ResponseDto> register(UserDto userDto) {
         if (userRepository.existsByUsername(userDto.getUsername())) {
@@ -50,8 +53,20 @@ public class AuthService {
         }
         user.setCurrency("RON");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        User userFromDB = userRepository.save(user);
+
+        List<Category> categories = new ArrayList<>();
+        categories.add(new Category(0L, "Food", userFromDB));
+        categories.add(new Category(0L, "Car", userFromDB));
+        categories.add(new Category(0L, "House", userFromDB));
+        categories.add(new Category(0L, "Gym", userFromDB));
+        categories.add(new Category(0L, "Entertainment", userFromDB));
+
+        for (Category category : categories) {
+            categoryRepository.save(category);
+        }
         System.out.println("Registration successful!");
-        userRepository.save(user);
         return new ResponseEntity<>(new ResponseDto("Registration successful"), HttpStatus.CREATED);
     }
 
@@ -61,11 +76,5 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtTokenGenerator.generateToken(authentication);
         return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
-    }
-
-    public boolean isAuthenticated(HttpServletRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null && authentication.isAuthenticated()
-                && authentication instanceof UsernamePasswordAuthenticationToken;
     }
 }

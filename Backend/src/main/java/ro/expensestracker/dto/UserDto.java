@@ -3,6 +3,7 @@ package ro.expensestracker.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import ro.expensestracker.entity.Category;
 import ro.expensestracker.entity.Expense;
 
 import java.math.BigDecimal;
@@ -21,7 +22,9 @@ public class UserDto {
     private String currency;
     private List<Expense> expenses;
 
-    public UserDto(Long id, String username, String email, String password, BigDecimal budget, String currency, List<Expense> expenses) {
+    private List<Category> categories;
+
+    public UserDto(Long id, String username, String email, String password, BigDecimal budget, String currency, List<Expense> expenses, List<Category> categories) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -29,6 +32,7 @@ public class UserDto {
         this.budget = budget;
         this.currency = currency;
         this.expenses = expenses;
+        this.categories = categories;
     }
 
     public UserDto() {
@@ -88,5 +92,13 @@ public class UserDto {
 
     public void setExpenses(List<Expense> expenses) {
         this.expenses = expenses;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

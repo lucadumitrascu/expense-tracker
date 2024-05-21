@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     UserService userService;
@@ -35,5 +35,4 @@ public class UserController {
     public ResponseEntity<String> updateCurrency(@RequestBody String currency) {
         return userService.updateUserCurrency(currency);
     }
-
 }

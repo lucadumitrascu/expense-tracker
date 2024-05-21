@@ -1,11 +1,16 @@
-// Constructors
+/* ------------------------------------------------------------------------------------ */
 
-function User(id, name, expenses, budget, currency) {
+/* Constructors */
+
+/* ------------------------------------------------------------------------------------ */
+
+function User(id, name, expenses, budget, currency, categories) {
     this.id = id;
     this.name = name;
     this.expenses = expenses;
     this.budget = budget;
     this.currency = currency;
+    this.categories = categories;
 }
 
 function Expense(id, category, sum, date) {
@@ -14,20 +19,77 @@ function Expense(id, category, sum, date) {
     this.sum = sum;
     this.date = date;
 }
+
+function Category(id,name) {
+    this.id = id;
+    this.name = name;
+}
+
+
+
 /* ------------------------------------------------------------------------------------ */
 
-/* Fetch user data*/
+/* Elements needed in the page */
 
 /* ------------------------------------------------------------------------------------ */
-// TOKEN
-const token = localStorage.getItem("accessToken");
-console.log(token);
 
-// Global variables
-let userData = null;
-let user;
 let spanUsername = document.getElementById("span-username");
 let spanBudgetValue = document.getElementById('span-budget-value');
+
+/* Statistics and categories */
+let statisticsProgress = document.querySelectorAll('.progress');
+let statisticsAmount = document.querySelectorAll('.statistics-amount');
+let statisticsCategory = document.querySelectorAll('.category-name');
+
+
+let divAddNewExpense = document.getElementById('div-add-new-expense');
+let divStatistics = document.getElementById('div-statistics');
+let divGroupMiddleSections = document.getElementById('div-group-middle-sections');
+
+let errorMessageSet = false;
+
+/* Change currency */
+let buttonChangeCurrency = document.getElementById('button-change-currency');
+let buttonChangeCurrencyClicked = false;
+let buttonCurrencies = document.querySelectorAll('.button-select-currency');
+let oldCurrency;
+let divCurrencyOptions = document.getElementById('div-currency-options');
+
+/* Change budget */
+let buttonChangeBudget = document.getElementById('button-change-budget');
+let spanBudgetText = document.getElementById('span-budget-text');
+let buttonChangeBudgetClicked = false;
+let oldBudgetValue = 0;
+let newBudgetValue = 0;
+
+/* Add new category */
+let categoryList = document.getElementById('form-input-category');
+
+/* Button from vertical navigation bar */
+let buttonAddCategory = document.getElementById('button-add-new-category');
+let buttonAddCategoryClicked = false;
+let divAddNewCategory = document.createElement('div');
+let spanAddNewCategory = document.createElement('span');
+let formAddNewCategory = document.createElement('form');
+let inputNewCategory = document.createElement('input');
+let buttonAddNewCategory = document.createElement('button');
+
+/* Add new expense */
+let formExpense = document.getElementById('form-expense');
+
+// Span Insufficient Funds 
+let spanInsufficientFunds = document.createElement('span');
+
+
+
+/* ------------------------------------------------------------------------------------ */
+
+/* Fetch user data from database */
+
+/* ------------------------------------------------------------------------------------ */
+const token = localStorage.getItem("accessToken");
+let userData = null;
+let user;
 let currency;
 
 fetchUserData();
@@ -41,8 +103,8 @@ if (userData != null) {
     currency = user.currency;
 }
 
+let numberOfCategories = user.categories.length;
 
-let numberOfCategories = 5;
 
 /* Currency */
 let currencyHTML = document.querySelectorAll('.currency');
@@ -50,17 +112,12 @@ currencyHTML.forEach(function (currency1) {
     currency1.innerText = currency;
 });
 
-/* Statistics and categories */
-let statisticsProgress = document.querySelectorAll('.progress');
-let statisticsAmount = document.querySelectorAll('.statistics-amount');
-let statisticsCategory = document.querySelectorAll('.category-name');
+for(let i=0;i<numberOfCategories;i++) {
+    createNewCategory(user.categories[i].name);
+}
 
 
-let divAddNewExpense = document.getElementById('div-add-new-expense');
-let divStatistics = document.getElementById('div-statistics');
-let divGroupMiddleSections = document.getElementById('div-group-middle-sections');
 
-let errorMessageSet = false;
 
 
 
@@ -88,90 +145,13 @@ buttonHome.addEventListener("click", function () {
 
 
 
-
-/* ------------------------------------------------------------------------------------ */
-
-/* Change name functionality */
-
-/* ------------------------------------------------------------------------------------ */
-
-/*
-let buttonChangeName = document.getElementById('button-change-name');
-//spanUsername
-let buttonChangeNameClicked = false;
-let oldName;
-buttonChangeName.addEventListener("click", function () {
-
-    if (!buttonChangeNameClicked) {
-        buttonChangeNameClicked = true;
-
-        oldName = spanUsername.innerText;
-        // Append "editable" styles
-        buttonChangeName.style = "color: palegreen;font-weight: bold; border: 1px solid white;";
-        buttonChangeName.innerHTML = "<i class='fa fa-usd'style='margin-right: 13px; margin-left: 5px;'></i>Save Name";
-
-        spanUsername.style = "color: grey; border: 1px solid green";
-        spanUsername.contentEditable = true;
-
-        spanUsername.addEventListener("keydown", function (event) {
-
-            let keyCode = event.code;
-
-            let isEnter = (keyCode === "Enter");
-            let isBackspace = (keyCode === "Backspace");
-            let isArrowLeft = (keyCode === "ArrowLeft");
-            let isArrowRight = (keyCode === "ArrowRight");
-
-            if (isEnter) {
-                event.preventDefault();
-            }
-            if (spanUsername.innerText.length > 20 && !isBackspace && !isArrowLeft && !isArrowRight) {
-                event.preventDefault();
-            }
-        });
-    }
-    else {
-        buttonChangeNameClicked = false;
-
-        if (spanUsername.innerText.length === 0) {
-            spanUsername.innerText = oldName;
-        }
-        user.name = spanUsername.innerText;
-        // Append normal styles
-        buttonChangeName.style = "";
-        buttonChangeName.innerHTML = "<i class='fa fa-usd'style='margin-right: 13px; margin-left: 5px;'></i>Change Name";
-        buttonChangeName.classList.add('vertical-navbar-button');
-
-
-        spanUsername.style = "";
-        spanUsername.classList.add("span-budget-value");
-
-        spanUsername.contentEditable = false;
-    }
-})
-
-
-*/
-
-
-
-
-
-
-
-
 /* ------------------------------------------------------------------------------------ */
 
 /* Change currency functionality */
 
 /* ------------------------------------------------------------------------------------ */
 
-let buttonChangeCurrency = document.getElementById('button-change-currency');
-let buttonChangeCurrencyClicked = false;
 
-let buttonCurrencies = document.querySelectorAll('.button-select-currency');
-let oldCurrency;
-let divCurrencyOptions = document.getElementById('div-currency-options');
 
 buttonChangeCurrency.addEventListener("click", function () {
     if (!buttonChangeCurrencyClicked) {
@@ -309,12 +289,6 @@ buttonCurrencies[2].addEventListener("click", function () {
 /* ------------------------------------------------------------------------------------ */
 
 
-let buttonChangeBudget = document.getElementById('button-change-budget');
-let spanBudgetText = document.getElementById('span-budget-text');
-let buttonChangeBudgetClicked = false;
-let oldBudgetValue = 0;
-let newBudgetValue = 0;
-
 buttonChangeBudget.addEventListener("click", function () {
 
     if (!buttonChangeBudgetClicked) {
@@ -392,17 +366,6 @@ buttonChangeBudget.addEventListener("click", function () {
 /* Add new category functionality */
 
 /* ------------------------------------------------------------------------------------ */
-let categoryList = document.getElementById('form-input-category');
-
-/* Button from vertical navigation bar */
-let buttonAddCategory = document.getElementById('button-add-new-category');
-let buttonAddCategoryClicked = false;
-
-let divAddNewCategory = document.createElement('div');
-let spanAddNewCategory = document.createElement('span');
-let formAddNewCategory = document.createElement('form');
-let inputNewCategory = document.createElement('input');
-let buttonAddNewCategory = document.createElement('button');
 
 
 /* Create the div where user have to enter a new category */
@@ -560,10 +523,6 @@ function createCategoryExistsErrorMessage() {
 /* Add new expense functionality */
 
 /* ------------------------------------------------------------------------------------ */
-let formExpense = document.getElementById('form-expense');
-
-// Span Insufficient Funds 
-let spanInsufficientFunds = document.createElement('span');
 
 document.getElementById("form-expense").addEventListener("submit", function (event) {
     event.preventDefault();
@@ -914,7 +873,7 @@ function getYearExpenses(expenses) {
 
 async function fetchUserData() {
     try {
-        const response = await fetch(`http://localhost:8080/users/details`, {
+        const response = await fetch(`http://localhost:8080/api/users/details`, {
             method: "GET",
             credentials: "include",
             headers: {
@@ -939,7 +898,11 @@ async function fetchUserData() {
         let expenses = userData.expenses.map(expenseData => {
             return new Expense(expenseData.id, expenseData.category, expenseData.sum, expenseData.date.substring(0, 10));
         });
+        let categories = userData.categories.map(categoryData => {
+            return new Category(categoryData.id, categoryData.name);
+        });
         user.expenses = expenses;
+        user.categories = categories;
         localStorage.setItem("userData", JSON.stringify(user));
         console.log("User details:", user);
 
@@ -951,7 +914,7 @@ async function fetchUserData() {
 
 async function saveBudgetValueInDatabase(budget) {
     try {
-        const url = 'http://localhost:8080/users/budget';
+        const url = 'http://localhost:8080/api/users/budget';
         const response = await fetch(url, {
             method: 'PUT',
             credentials: "include",
@@ -976,7 +939,7 @@ async function saveBudgetValueInDatabase(budget) {
 
 async function saveExpenseInDatabase(newExpense, amount) {
     try {
-        const url = 'http://localhost:8080/expenses';
+        const url = 'http://localhost:8080/api/expenses';
         const response = await fetch(url, {
             method: 'POST',
             credentials: "include",
@@ -1006,7 +969,7 @@ async function saveExpenseInDatabase(newExpense, amount) {
 
 
 async function deleteExpenseFromDatabase(id) {
-    const url = `http://localhost:8080/expenses/${id}`;
+    const url = `http://localhost:8080/api/expenses/${id}`;
     try {
         const response = await fetch(url, {
             method: 'DELETE',
@@ -1033,7 +996,7 @@ async function deleteExpenseFromDatabase(id) {
 
 async function saveCurrencyToDatabase(currency) {
     try {
-        const url = 'http://localhost:8080/users/currency';
+        const url = 'http://localhost:8080/api/users/currency';
         const response = await fetch(url, {
             method: 'PUT',
             credentials: "include",

@@ -46,7 +46,7 @@ public class SecurityConfiguration {
                     return configuration;
                 }))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/authentication/**").permitAll()
+                        .requestMatchers("/api/authentication/**").permitAll()
                         .anyRequest().authenticated())
 
 

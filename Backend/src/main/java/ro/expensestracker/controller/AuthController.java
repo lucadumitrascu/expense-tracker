@@ -1,10 +1,8 @@
 package ro.expensestracker.controller;
 
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,7 @@ import ro.expensestracker.service.AuthService;
 
 @RestController
 @Validated
-@RequestMapping("/authentication")
+@RequestMapping("/api/authentication")
 public class AuthController {
 
     AuthService authService;
@@ -33,13 +31,5 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody UserDto userDto) {
         return authService.login(userDto);
-    }
-
-    @GetMapping("/checkAuthentication")
-    public ResponseEntity<Boolean> checkAuthentication(HttpServletRequest request) {
-        if (authService.isAuthenticated(request))
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        else return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-
     }
 }

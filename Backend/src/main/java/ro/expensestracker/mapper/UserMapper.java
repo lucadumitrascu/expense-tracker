@@ -6,6 +6,7 @@ import ro.expensestracker.entity.User;
 
 @Component
 public class UserMapper {
+
     public static User toUser(UserDto userDto) {
         User user = new User();
         user.setId(userDto.getId());
@@ -15,6 +16,8 @@ public class UserMapper {
         user.setBudget(userDto.getBudget());
         user.setCurrency(userDto.getCurrency());
         user.setExpenses(userDto.getExpenses());
+        user.setCategories(userDto.getCategories());
+
         return user;
     }
 
@@ -27,6 +30,8 @@ public class UserMapper {
         userDto.setBudget(user.getBudget());
         userDto.setCurrency(user.getCurrency());
         userDto.setExpenses(user.getExpenses());
+        userDto.setCategories(user.getCategories());
+
         return userDto;
     }
 }
