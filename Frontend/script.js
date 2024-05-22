@@ -20,7 +20,7 @@ function Expense(id, category, sum, date) {
     this.date = date;
 }
 
-function Category(id,name) {
+function Category(id, name) {
     this.id = id;
     this.name = name;
 }
@@ -35,37 +35,32 @@ function Category(id,name) {
 
 let spanUsername = document.getElementById("span-username");
 let spanBudgetValue = document.getElementById('span-budget-value');
-
 /* Statistics and categories */
 let statisticsProgress = document.querySelectorAll('.progress');
 let statisticsAmount = document.querySelectorAll('.statistics-amount');
 let statisticsCategory = document.querySelectorAll('.category-name');
-
-
+let spanPeriodStatistics = document.getElementById("span-period");
+/* Total money spent in statistics */
+let totalMoneySpent = document.getElementById("span-total");
+/* Middle section */
 let divAddNewExpense = document.getElementById('div-add-new-expense');
 let divStatistics = document.getElementById('div-statistics');
 let divGroupMiddleSections = document.getElementById('div-group-middle-sections');
-
 let errorMessageSet = false;
-
 /* Change currency */
 let buttonChangeCurrency = document.getElementById('button-change-currency');
 let buttonChangeCurrencyClicked = false;
 let buttonCurrencies = document.querySelectorAll('.button-select-currency');
 let oldCurrency;
 let divCurrencyOptions = document.getElementById('div-currency-options');
-
 /* Change budget */
 let buttonChangeBudget = document.getElementById('button-change-budget');
 let spanBudgetText = document.getElementById('span-budget-text');
 let buttonChangeBudgetClicked = false;
 let oldBudgetValue = 0;
 let newBudgetValue = 0;
-
 /* Add new category */
 let categoryList = document.getElementById('form-input-category');
-
-/* Button from vertical navigation bar */
 let buttonAddCategory = document.getElementById('button-add-new-category');
 let buttonAddCategoryClicked = false;
 let divAddNewCategory = document.createElement('div');
@@ -73,12 +68,26 @@ let spanAddNewCategory = document.createElement('span');
 let formAddNewCategory = document.createElement('form');
 let inputNewCategory = document.createElement('input');
 let buttonAddNewCategory = document.createElement('button');
-
 /* Add new expense */
 let formExpense = document.getElementById('form-expense');
-
-// Span Insufficient Funds 
 let spanInsufficientFunds = document.createElement('span');
+/* Button see expenses */
+let buttonSeeExpenses = document.getElementById('button-expenses');
+let divExpenses = document.createElement('div');
+let titleExpensesCategories = document.createElement('span');
+/* Button see categories */
+let buttonSeeCategories = document.getElementById('button-categories');
+let divCategories = document.createElement('div');
+/* See expenses by period */
+let dayClicked = false;
+let weekClicked = false;
+let monthClicked = false;
+let yearClicked = false;
+/* TOP BUTTONS */
+let buttonDay = document.getElementById("button-day");
+let buttonWeek = document.getElementById("button-week");
+let buttonMonth = document.getElementById("button-month");
+let buttonYear = document.getElementById("button-year");
 
 
 
@@ -87,10 +96,15 @@ let spanInsufficientFunds = document.createElement('span');
 /* Fetch user data from database */
 
 /* ------------------------------------------------------------------------------------ */
+
 const token = localStorage.getItem("accessToken");
 let userData = null;
 let user;
+
+let numberOfCategories;
+
 let currency;
+let currencyHTML;
 
 fetchUserData();
 userData = localStorage.getItem("userData");
@@ -101,24 +115,25 @@ if (userData != null) {
     spanUsername.innerHTML = user.name;
     spanBudgetValue.innerHTML = user.budget;
     currency = user.currency;
+
+
+    numberOfCategories = user.categories.length;
+
+    /* Categories */
+    for (let i = 0; i < numberOfCategories; i++) {
+        createNewCategory(user.categories[i].name);
+    }
+
+    /* Currency */
+    currencyHTML = document.querySelectorAll('.currency');
+    currencyHTML.forEach(function (currency1) {
+        currency1.innerText = currency;
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        buttonDay.click();
+    });
 }
-
-let numberOfCategories = user.categories.length;
-
-
-/* Currency */
-let currencyHTML = document.querySelectorAll('.currency');
-currencyHTML.forEach(function (currency1) {
-    currency1.innerText = currency;
-});
-
-for(let i=0;i<numberOfCategories;i++) {
-    createNewCategory(user.categories[i].name);
-}
-
-
-
-
 
 
 
@@ -132,16 +147,234 @@ let buttonHome = document.getElementById('button-home');
 buttonHome.addEventListener("click", function () {
     dayClicked = false;
     buttonDay.click();
-    divAddNewExpense.style.display = "block";
 
+    divAddNewExpense.style.display = "block";
+    divStatistics.style.display = "flex";
+
+    /* Add new category */
     formAddNewCategory.reset();
     buttonAddCategoryClicked = false;
     divAddNewCategory.style.display = "none";
+
+
+    /* See expenses / categories */
+    titleExpensesCategories.style.display = "none";
+    divExpenses.style.display = "none";
+    divCategories.style.display = "none";
 });
 
 
 
+/* ------------------------------------------------------------------------------------ */
 
+/* See expenses */
+
+/* ------------------------------------------------------------------------------------ */
+
+buttonSeeExpenses.addEventListener('click', function () {
+
+    divExpenses.style.display = "flex";
+    titleExpensesCategories.style.display = "block";
+
+    divStatistics.style.display = "none";
+    divAddNewExpense.style.display = "none";
+
+    divCategories.style.display = "none";
+
+    formAddNewCategory.reset();
+    buttonAddCategoryClicked = false;
+    divAddNewCategory.style.display = "none";
+
+    createDivExpenses();
+    createExpense();
+});
+
+function createDivExpenses() {
+    titleExpensesCategories.innerHTML = "Expenses";
+
+    titleExpensesCategories.classList.add('span-title-expenses');
+    divGroupMiddleSections.appendChild(titleExpensesCategories);
+
+    divExpenses.classList.add('div-expenses');
+    divGroupMiddleSections.appendChild(divExpenses);
+}
+
+function createExpense() {
+    if (user.expenses.length === 0) {
+        titleExpensesCategories.innerHTML = "You don't have expenses registered yet!";
+    }
+    divExpenses.innerHTML = '';
+
+    // Create the header
+    let header = document.createElement('div');
+    header.classList.add('expense-card', 'expense-header');
+
+    let headerCategory = document.createElement('div');
+    headerCategory.textContent = 'Category';
+    headerCategory.classList.add('expense-category');
+
+    let headerSum = document.createElement('div');
+    headerSum.textContent = 'Sum';
+    headerSum.classList.add('expense-sum');
+
+    let headerDate = document.createElement('div');
+    headerDate.textContent = 'Date';
+    headerDate.classList.add('expense-date');
+
+    let headerAction = document.createElement('div');
+    headerAction.textContent = 'Action';
+    headerAction.classList.add('expense-action');
+
+    header.appendChild(headerCategory);
+    header.appendChild(headerSum);
+    header.appendChild(headerDate);
+    header.appendChild(headerAction);
+
+    divExpenses.appendChild(header);
+
+    user.expenses.reverse().forEach(expense => {
+        let card = document.createElement('div');
+        card.classList.add('expense-card');
+
+        let category = document.createElement('div');
+        category.textContent = `${expense.category}`;
+        category.classList.add('expense-category');
+
+        let sum = document.createElement('div');
+        sum.textContent = `${expense.sum.toFixed(2)}`;
+        sum.classList.add('expense-sum');
+
+        let date = document.createElement('div');
+        date.textContent = `${expense.date}`;
+        date.classList.add('expense-date');
+
+        let action = document.createElement('div');
+        let deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', function () {
+            deleteExpense(expense.id);
+        });
+        action.appendChild(deleteButton);
+        action.classList.add('expense-action');
+
+        card.appendChild(category);
+        card.appendChild(sum);
+        card.appendChild(date);
+        card.appendChild(action);
+
+        divExpenses.appendChild(card);
+    });
+}
+
+function deleteExpense(id) {
+    deleteExpenseFromDatabase(id);
+    user.expenses = user.expenses.filter(exp => exp.id !== id);
+    createExpense();
+
+    dayClicked = false;
+    buttonDay.click();
+}
+
+
+
+/* ------------------------------------------------------------------------------------ */
+
+/* See categories */
+
+/* ------------------------------------------------------------------------------------ */
+
+buttonSeeCategories.addEventListener('click', function () {
+
+    titleExpensesCategories.style.display = "block";
+    divCategories.style.display = "block";
+
+    divStatistics.style.display = "none";
+    divAddNewExpense.style.display = "none";
+
+    divExpenses.style.display = "none";
+
+    formAddNewCategory.reset();
+    buttonAddCategoryClicked = false;
+    divAddNewCategory.style.display = "none";
+
+    createDivCategories();
+    createCategory();
+});
+
+function createDivCategories() {
+    titleExpensesCategories.innerHTML = "Categories";
+
+    titleExpensesCategories.classList.add('span-title-categories');
+    divGroupMiddleSections.appendChild(titleExpensesCategories);
+
+    divCategories.classList.add('div-categories');
+    divGroupMiddleSections.appendChild(divCategories);
+}
+
+function createCategory() {
+    if (user.categories.length === 0) {
+        titleExpensesCategories.innerHTML = "You don't have categories registered yet!";
+    }
+    divCategories.innerHTML = '';
+
+    let header = document.createElement('div');
+    header.classList.add('category-card', 'category-header');
+
+    let nameHeader = document.createElement('div');
+    nameHeader.textContent = 'Name';
+    nameHeader.classList.add('category-name-see-categories');
+
+    let actionHeader = document.createElement('div');
+    actionHeader.textContent = 'Action';
+    actionHeader.classList.add('category-action');
+
+    header.appendChild(nameHeader);
+    header.appendChild(actionHeader);
+
+    divCategories.appendChild(header);
+
+    user.categories.forEach(category => {
+        let card = document.createElement('div');
+        card.classList.add('category-card');
+
+        let name = document.createElement('div');
+        name.textContent = `${category.name}`;
+        name.classList.add('category-name-see-categories');
+
+        let action = document.createElement('div');
+        let deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', function () {
+            deleteCategory(category.id, category.name);
+        });
+        action.appendChild(deleteButton);
+        action.classList.add('category-action');
+
+        card.appendChild(name);
+        card.appendChild(action);
+
+        divCategories.appendChild(card);
+    });
+}
+
+function deleteCategory(id, name) {
+    let divIndividualStatistics = document.querySelectorAll(".div-individual-statistics");
+    let categoryOption = document.querySelectorAll(".form-input-category-option");
+
+    for (let i = 0; i < numberOfCategories; i++) {
+        divIndividualStatistics[i].remove();
+        categoryOption[i + 1].remove();
+    }
+    numberOfCategories--;
+
+    user.categories = user.categories.filter(cat => cat.name !== name);
+
+    for (let i = 0; i < numberOfCategories; i++) {
+        createNewCategory(user.categories[i].name);
+    }
+    createCategory();
+    deleteCategoryFromDatabase(id);
+}
 
 
 
@@ -150,8 +383,6 @@ buttonHome.addEventListener("click", function () {
 /* Change currency functionality */
 
 /* ------------------------------------------------------------------------------------ */
-
-
 
 buttonChangeCurrency.addEventListener("click", function () {
     if (!buttonChangeCurrencyClicked) {
@@ -167,6 +398,7 @@ buttonChangeCurrency.addEventListener("click", function () {
         buttonChangeCurrency.classList.add('vertical-navbar-button');
     }
 });
+
 buttonCurrencies[0].addEventListener("click", function () {
     divCurrencyOptions.style = "display: none;";
     buttonChangeCurrencyClicked = false;
@@ -179,7 +411,7 @@ buttonCurrencies[0].addEventListener("click", function () {
             let newValue = parseFloat(spanBudgetValue.innerText) * 4.59892;
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
-                expense.sum = expense.sum * 4.59892;
+                user.expenses.sum = expense.sum * 4.59892;
             });
         }
         if (oldCurrency === "€") {
@@ -192,10 +424,12 @@ buttonCurrencies[0].addEventListener("click", function () {
         }
         dayClicked = false;
         buttonDay.click();
+        createExpense();
         oldCurrency = currency;
         user.currency = currency;
         user.budget = spanBudgetValue.innerText;
         saveCurrencyToDatabase(user.currency);
+        saveAllExpensesInDatabase(user.expenses);
     }
     buttonChangeCurrency.style = "";
     buttonChangeCurrency.classList.add('vertical-navbar-button');
@@ -227,10 +461,12 @@ buttonCurrencies[1].addEventListener("click", function () {
         }
         dayClicked = false;
         buttonDay.click();
+        createExpense();
         oldCurrency = currency;
         user.currency = currency;
         user.budget = spanBudgetValue.innerText;
         saveCurrencyToDatabase(user.currency);
+        saveAllExpensesInDatabase(user.expenses);
     }
     buttonChangeCurrency.style = "";
     buttonChangeCurrency.classList.add('vertical-navbar-button');
@@ -262,23 +498,16 @@ buttonCurrencies[2].addEventListener("click", function () {
         }
         dayClicked = false;
         buttonDay.click();
+        createExpense();
         oldCurrency = currency;
         user.currency = currency;
         user.budget = spanBudgetValue.innerText;
         saveCurrencyToDatabase(user.currency);
-
+        saveAllExpensesInDatabase(user.expenses);
     }
     buttonChangeCurrency.style = "";
     buttonChangeCurrency.classList.add('vertical-navbar-button');
 });
-
-
-
-
-
-
-
-
 
 
 
@@ -287,7 +516,6 @@ buttonCurrencies[2].addEventListener("click", function () {
 /* Change budget functionality */
 
 /* ------------------------------------------------------------------------------------ */
-
 
 buttonChangeBudget.addEventListener("click", function () {
 
@@ -331,7 +559,7 @@ buttonChangeBudget.addEventListener("click", function () {
         buttonChangeBudgetClicked = false;
 
         newBudgetValue = spanBudgetValue.innerText;
-        if (newBudgetValue === "" || parseFloat(newBudgetValue) === 0) {
+        if (newBudgetValue === "" || parseFloat(newBudgetValue) === 0 || parseFloat(oldBudgetValue) === parseFloat(newBudgetValue)) {
             spanBudgetValue.innerText = oldBudgetValue;
         }
         else {
@@ -355,12 +583,6 @@ buttonChangeBudget.addEventListener("click", function () {
 
 
 
-
-
-
-
-
-
 /* ------------------------------------------------------------------------------------ */
 
 /* Add new category functionality */
@@ -371,8 +593,17 @@ buttonChangeBudget.addEventListener("click", function () {
 /* Create the div where user have to enter a new category */
 buttonAddCategory.addEventListener("click", function () {
     if (!buttonAddCategoryClicked) {
+
         buttonAddCategoryClicked = true;
+        divStatistics.style.display = 'flex';
+
+        /* Add new expense */
         divAddNewExpense.style.display = 'none';
+
+        /* See expenses / categories */
+        divCategories.style.display = 'none';
+        divExpenses.style.display = 'none';
+        titleExpensesCategories.style.display = 'none';
 
         createDivAddNewCategory();
     }
@@ -389,7 +620,7 @@ function createDivAddNewCategory() {
     inputNewCategory.placeholder = "Food";
     inputNewCategory.required = true;
     inputNewCategory.type = "text";
-    inputNewCategory.maxLength = 20;
+    inputNewCategory.maxLength = 10;
     inputNewCategory.name = "category";
     inputNewCategory.style.marginTop = "20px";
     formAddNewCategory.appendChild(inputNewCategory);
@@ -409,14 +640,14 @@ function createDivAddNewCategory() {
 
 /* Return to home and create a new category */
 
-formAddNewCategory.addEventListener("submit", function (event) {
+formAddNewCategory.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     // ok means this category doesn't exist
     let ok = true;
 
     for (let i = 0; i < numberOfCategories; i++) {
-        if (statisticsCategory[i].innerText == inputNewCategory.value) {
+        if (user.categories[i].name == inputNewCategory.value) {
             createCategoryExistsErrorMessage();
             ok = false;
             i = numberOfCategories;
@@ -428,12 +659,20 @@ formAddNewCategory.addEventListener("submit", function (event) {
         divAddNewExpense.style.display = "block";
 
         numberOfCategories++;
-
+        // Save the new category in the database
+        try {
+            const responseData = await saveCategoryInDatabase(inputNewCategory.value);
+            user.categories.push(new Category(responseData.id, inputNewCategory.value));
+        } catch (error) {
+            console.error('Error adding new category:', error);
+        }
         createNewCategory(inputNewCategory.value);
 
-        saveCategoryInDatabase(inputNewCategory.value);
         buttonAddCategoryClicked = false;
         formAddNewCategory.reset();
+
+        dayClicked = false;
+        buttonDay.click();
     }
 });
 
@@ -510,14 +749,6 @@ function createCategoryExistsErrorMessage() {
 
 
 
-
-
-
-
-
-
-
-
 /* ------------------------------------------------------------------------------------ */
 
 /* Add new expense functionality */
@@ -562,9 +793,10 @@ async function setNewExpenseToList(amount, category) {
     try {
         let newExpense = new Expense(0, category, parseFloat(amount), new Date().toISOString().split('T')[0]);
         const responseData = await saveExpenseInDatabase(newExpense, amount);
+
         const newExpenseFromServer = new Expense(responseData.id, category, parseFloat(amount), new Date().toISOString().split('T')[0]);
         user.expenses.push(newExpenseFromServer);
-        console.log('New expense added:', newExpenseFromServer);
+
         dayClicked = false;
         buttonDay.click();
     } catch (error) {
@@ -574,46 +806,11 @@ async function setNewExpenseToList(amount, category) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ------------------------------------------------------------------------------------ */
 
 /* See expenses by period functionality */
 
 /* ------------------------------------------------------------------------------------ */
-
-let dayClicked = false;
-let weekClicked = false;
-let monthClicked = false;
-let yearClicked = false;
-
-document.addEventListener('DOMContentLoaded', function () {
-    buttonDay.classList.add('button-active');
-    buttonDay.click();
-});
-
-/* TOP BUTTONS */
-let buttonDay = document.getElementById("button-day");
-let buttonWeek = document.getElementById("button-week");
-let buttonMonth = document.getElementById("button-month");
-let buttonYear = document.getElementById("button-year");
-
-let spanPeriodStatistics = document.getElementById("span-period");
-
-/* Total money spent */
-let totalMoneySpent = document.getElementById("span-total");
-
 
 /* Button onclick functions */
 buttonDay.addEventListener("click", function () {
@@ -686,9 +883,6 @@ buttonYear.addEventListener("click", function () {
 });
 
 
-
-
-
 function populateHistory(expenses, period) {
     let divHistoryList = document.querySelector('.div-history-list');
     divHistoryList.innerHTML = '';
@@ -750,25 +944,17 @@ function populateHistory(expenses, period) {
 
         let currencySpan = document.createElement('span');
         currencySpan.classList.add('currency');
+
         currencySpan.textContent = currency;
         expenseSpan.appendChild(currencySpan);
 
 
         divHistoryItem.appendChild(expenseSpan);
         divHistoryList.appendChild(divHistoryItem);
-        expenseSpan.addEventListener('click', async function () {
-            try {
-                await deleteExpenseFromDatabase(expense.id);
-                user.expenses = user.expenses.filter(exp => exp.id !== expense.id);
-                dayClicked = false;
-                buttonDay.click();
-            } catch (error) {
-                console.error('Error deleting expense:', error);
-            }
-        });
 
     });
 }
+
 
 function calculateStatistics(expenses) {
 
@@ -827,8 +1013,6 @@ function getTodayExpenses(expenses) {
     return todayExpenses;
 }
 
-
-
 function getWeekExpenses(expenses) {
     let today = new Date();
     let lastDayOfWeek = new Date(today.setDate(today.getDate()));
@@ -870,10 +1054,16 @@ function getYearExpenses(expenses) {
 
 
 
+/* ------------------------------------------------------------------------------------ */
+
+/* User api calls */
+
+/* ------------------------------------------------------------------------------------ */
 
 async function fetchUserData() {
     try {
-        const response = await fetch(`http://localhost:8080/api/users/details`, {
+        const url = `http://localhost:8080/api/users/details`;
+        const response = await fetch(url, {
             method: "GET",
             credentials: "include",
             headers: {
@@ -903,9 +1093,9 @@ async function fetchUserData() {
         });
         user.expenses = expenses;
         user.categories = categories;
-        localStorage.setItem("userData", JSON.stringify(user));
-        console.log("User details:", user);
 
+        localStorage.setItem("userData", JSON.stringify(user));
+        console.log("User details", user);
     } catch (error) {
         console.error("Error fetching user data:", error);
         throw error;
@@ -925,74 +1115,17 @@ async function saveBudgetValueInDatabase(budget) {
             body: JSON.stringify(budget)
         });
 
-        if (!response.ok) {
-            throw new Error('Network error: ' + response.status);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Budget was successfully updated', data);
+        } else {
+            console.error('Failed to update budget:', response.status)
         }
-
-        const data = await response.json();
-        console.log('Budget successfully updated:', data);
     } catch (error) {
         console.error('Error updating budget:', error);
         throw error;
     }
 }
-
-async function saveExpenseInDatabase(newExpense, amount) {
-    try {
-        const url = 'http://localhost:8080/api/expenses';
-        const response = await fetch(url, {
-            method: 'POST',
-            credentials: "include",
-            headers: {
-                "Authorization": "Bearer " + token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ category: newExpense.category, sum: parseFloat(amount), date: newExpense.date, user_id: user.id })
-        });
-
-        if (!response.ok) {
-            throw new Error('Network error: ' + response.status);
-        }
-
-        const data = await response.json();
-
-        if (data && data.id) {
-            return data;
-        } else {
-            console.error('Error: Invalid data returned from server');
-        }
-    } catch (error) {
-        console.error('Error adding expense:', error);
-        throw error;
-    }
-}
-
-
-async function deleteExpenseFromDatabase(id) {
-    const url = `http://localhost:8080/api/expenses/${id}`;
-    try {
-        const response = await fetch(url, {
-            method: 'DELETE',
-            credentials: "include",
-            headers: {
-                "Authorization": "Bearer " + token,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Network error: ' + response.status);
-        }
-        console.log('Expense was successfully deleted');
-        return response;
-    } catch (error) {
-        console.error('Error deleting expense:', error);
-        throw error;
-    }
-}
-
-
-
 
 async function saveCurrencyToDatabase(currency) {
     try {
@@ -1008,17 +1141,114 @@ async function saveCurrencyToDatabase(currency) {
         });
 
         if (response.ok) {
+            // save new budget in database
             saveBudgetValueInDatabase(user.budget);
+
             const data = await response.json();
             console.log('Currency was successfully updated:', data);
         } else {
-            console.error('Failed to update currency:', response.statusText);
+            console.error('Failed to update currency:', response.status);
         }
     } catch (error) {
         console.error('Error updating currency:', error);
         throw error;
     }
 }
+
+
+
+/* ------------------------------------------------------------------------------------ */
+
+/* Expense api calls */
+
+/* ------------------------------------------------------------------------------------ */
+
+async function saveExpenseInDatabase(newExpense, amount) {
+    try {
+        const url = 'http://localhost:8080/api/expenses';
+        const response = await fetch(url, {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ category: newExpense.category, sum: parseFloat(amount), date: newExpense.date, user_id: user.id })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            if (data && data.id) {
+                console.log("Expense was successfully saved", data)
+                return data;
+            } else {
+                console.error('Error: Invalid data returned from server');
+            }
+        }
+        else {
+            console.error('Failed to save expense:', response.status);
+        }
+    } catch (error) {
+        console.error('Error saving expense:', error);
+        throw error;
+    }
+}
+
+async function deleteExpenseFromDatabase(id) {
+    const url = `http://localhost:8080/api/expenses/${id}`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            console.log('Expense was successfully deleted');
+            return response;
+        } else {
+            console.error("Failed to delete expense:", response.status)
+        }
+    } catch (error) {
+        console.error('Error deleting expense:', error);
+        throw error;
+    }
+}
+
+
+async function saveAllExpensesInDatabase(expenses) {
+    const url = `http://localhost:8080/api/expenses`;
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(expenses),
+        });
+        if (response.ok) {
+            console.log('Expense was successfully deleted');
+            return response;
+        } else {
+            console.error("Failed to delete expense:", response.status)
+        }
+    } catch (error) {
+        console.error('Error deleting expense:', error);
+        throw error;
+    }
+}
+
+
+/* ------------------------------------------------------------------------------------ */
+
+/* Category api calls */
+
+/* ------------------------------------------------------------------------------------ */
 
 async function saveCategoryInDatabase(category) {
     try {
@@ -1030,17 +1260,48 @@ async function saveCategoryInDatabase(category) {
                 "Authorization": "Bearer " + token,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({name:category,userId:user.id})
+            body: JSON.stringify({ name: category, userId: user.id })
         });
+
 
         if (response.ok) {
             const data = await response.json();
             console.log('Category was successfully saved', data);
+            if (data && data.id) {
+                return data;
+            } else {
+                console.error('Error: Invalid data returned from server');
+            }
+            dayClicked = false;
+            buttonDay.click();
         } else {
             console.error('Failed to save category:', response.statusText);
         }
     } catch (error) {
         console.error('Error saving category:', error);
+        throw error;
+    }
+}
+
+async function deleteCategoryFromDatabase(id) {
+    const url = `http://localhost:8080/api/categories/${id}`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            credentials: "include",
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.ok) {
+            console.log('Category was successfully deleted');
+            return response;
+        } else {
+            console.error("Failed to delete expense:", response.status)
+        }
+    } catch (error) {
+        console.error('Error deleting category:', error);
         throw error;
     }
 }

@@ -15,7 +15,6 @@ import ro.expensestracker.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ExpenseService {
@@ -28,18 +27,6 @@ public class ExpenseService {
     public ExpenseService(ExpenseRepository expenseRepository, UserRepository userRepository) {
         this.expenseRepository = expenseRepository;
         this.userRepository = userRepository;
-    }
-
-    public List<ExpenseDto> getAllExpenses() {
-        List<Expense> expenses = expenseRepository.findAll();
-        return expenses.stream()
-                .map(ExpenseMapper::toExpenseDto)
-                .collect(Collectors.toList());
-    }
-
-    public Optional<ExpenseDto> getExpenseById(Long id) {
-        Optional<Expense> expenseOptional = expenseRepository.findById(id);
-        return expenseOptional.map(ExpenseMapper::toExpenseDto);
     }
 
     public ResponseEntity<ExpenseDto> createExpense(ExpenseDto expenseDto) {
@@ -88,16 +75,16 @@ public class ExpenseService {
     }
 
     public ResponseEntity<String> updateAllExpenses(List<ExpenseDto> expenses) {
-        Expense expense = new Expense();
         for (ExpenseDto expenseDto : expenses) {
             Optional<Expense> expenseOpt = expenseRepository.findById(expenseDto.getId());
             if (expenseOpt.isPresent()) {
-                expense = expenseOpt.get();
+                Expense expense = expenseOpt.get();
+                expense.setSum(expenseDto.getSum());
                 expenseRepository.save(expense);
             } else {
-                System.out.println("Invalid expense!");
+                System.out.println("Invalid expense with ID: " + expenseDto.getId());
             }
         }
-        return new ResponseEntity<String>("All expenses updated successfully!", HttpStatus.OK);
+        return new ResponseEntity<>("All expenses updated successfully!", HttpStatus.OK);
     }
 }

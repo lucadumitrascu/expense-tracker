@@ -32,7 +32,8 @@ public class CategoryService {
     public ResponseEntity<CategoryDto> createCategory(CategoryDto categoryDto) {
         Category category = CategoryMapper.toCategory(categoryDto);
         category.setUser(getAuthenticatedUser());
-        categoryRepository.save(category);
+        Category categoryWithUpdatedId = categoryRepository.save(category);
+        categoryDto.setId(categoryWithUpdatedId.getId());
         return new ResponseEntity<>(categoryDto,HttpStatus.CREATED);
     }
 
