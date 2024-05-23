@@ -411,15 +411,14 @@ buttonCurrencies[0].addEventListener("click", function () {
             let newValue = parseFloat(spanBudgetValue.innerText) * 4.59892;
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
-                user.expenses.sum = expense.sum * 4.59892;
+                expense.sum = parseFloat(expense.sum) * 4.59892;
             });
         }
         if (oldCurrency === "€") {
             let newValue = parseFloat(spanBudgetValue.innerText) * 4.97347;
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
-                expense.sum = expense.sum * 4.97347;
-
+                expense.sum = parseFloat(expense.sum) * 4.97347;
             });
         }
         dayClicked = false;
@@ -447,7 +446,7 @@ buttonCurrencies[1].addEventListener("click", function () {
             let newValue = parseFloat(spanBudgetValue.innerText) / 4.59892;
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
-                expense.sum = expense.sum / 4.59892;
+                expense.sum = parseFloat(expense.sum) / 4.59892;
 
             });
         }
@@ -455,8 +454,7 @@ buttonCurrencies[1].addEventListener("click", function () {
             let newValue = parseFloat(spanBudgetValue.innerText) / 0.924737;
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
-                expense.sum = expense.sum / 0.924737;
-
+                expense.sum = parseFloat(expense.sum) / 0.924737;
             });
         }
         dayClicked = false;
@@ -484,16 +482,14 @@ buttonCurrencies[2].addEventListener("click", function () {
             let newValue = parseFloat(spanBudgetValue.innerText) / 4.97347;
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
-                expense.sum = expense.sum / 4.97347;
-
+                expense.sum = parseFloat(expense.sum) / 4.97347;
             });
         }
         if (oldCurrency === "$") {
             let newValue = parseFloat(spanBudgetValue.innerText) * 0.924737;
             spanBudgetValue.innerText = newValue.toFixed(2);
             user.expenses.forEach(function (expense) {
-                expense.sum = expense.sum * 0.924737;
-
+                expense.sum = parseFloat(expense.sum) * 0.924737;
             });
         }
         dayClicked = false;
