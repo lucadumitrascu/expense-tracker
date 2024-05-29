@@ -267,12 +267,28 @@ function createExpense() {
 }
 
 function deleteExpense(id) {
-    deleteExpenseFromDatabase(id);
-    user.expenses = user.expenses.filter(exp => exp.id !== id);
-    createExpense();
-
-    dayClicked = false;
-    buttonDay.click();
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteExpenseFromDatabase(id);
+            user.expenses = user.expenses.filter(exp => exp.id !== id);
+            createExpense();
+            dayClicked = false;
+            buttonDay.click();
+            Swal.fire(
+                'Deleted!',
+                'Your expense has been deleted.',
+                'success'
+            );
+        }
+    });
 }
 
 
@@ -358,22 +374,39 @@ function createCategory() {
 }
 
 function deleteCategory(id, name) {
-    let divIndividualStatistics = document.querySelectorAll(".div-individual-statistics");
-    let categoryOption = document.querySelectorAll(".form-input-category-option");
-
-    for (let i = 0; i < numberOfCategories; i++) {
-        divIndividualStatistics[i].remove();
-        categoryOption[i + 1].remove();
-    }
-    numberOfCategories--;
-
-    user.categories = user.categories.filter(cat => cat.name !== name);
-
-    for (let i = 0; i < numberOfCategories; i++) {
-        createNewCategory(user.categories[i].name);
-    }
-    createCategory();
-    deleteCategoryFromDatabase(id);
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let divIndividualStatistics = document.querySelectorAll(".div-individual-statistics");
+            let categoryOption = document.querySelectorAll(".form-input-category-option");
+        
+            for (let i = 0; i < numberOfCategories; i++) {
+                divIndividualStatistics[i].remove();
+                categoryOption[i + 1].remove();
+            }
+            numberOfCategories--;
+        
+            user.categories = user.categories.filter(cat => cat.name !== name);
+        
+            for (let i = 0; i < numberOfCategories; i++) {
+                createNewCategory(user.categories[i].name);
+            }
+            createCategory();
+            deleteCategoryFromDatabase(id);
+            Swal.fire(
+                'Deleted!',
+                'Your category has been deleted.',
+                'success'
+            );
+        }
+    });
 }
 
 
