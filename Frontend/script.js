@@ -97,7 +97,7 @@ let buttonYear = document.getElementById("button-year");
 
 /* ------------------------------------------------------------------------------------ */
 
-const token = localStorage.getItem("accessToken");
+let token = localStorage.getItem("accessToken");
 let userData = null;
 let user;
 
@@ -1052,6 +1052,21 @@ function getYearExpenses(expenses) {
 
 /* ------------------------------------------------------------------------------------ */
 
+/* Log out button */
+
+/* ------------------------------------------------------------------------------------ */
+
+let buttonLogOut = document.getElementById("button-logout");
+buttonLogOut.addEventListener('click', function(){
+token = null;
+localStorage.removeItem('accessToken');
+window.location.href = "../authentication/login.html"
+});
+
+
+
+/* ------------------------------------------------------------------------------------ */
+
 /* User api calls */
 
 /* ------------------------------------------------------------------------------------ */
@@ -1069,6 +1084,7 @@ async function fetchUserData() {
         });
 
         if (!response.ok) {
+            window.location.href = "../authentication/login.html";
             throw new Error("Failed to fetch user details");
         }
 
@@ -1228,7 +1244,6 @@ async function saveAllExpensesInDatabase(expenses) {
             body: JSON.stringify(expenses),
         });
         if (response.ok) {
-            console.log('Expense was successfully deleted');
             return response;
         } else {
             console.error("Failed to delete expense:", response.status)
